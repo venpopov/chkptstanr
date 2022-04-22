@@ -1,0 +1,40 @@
+Package: chkptstanr
+Title: Checkpoint MCMC Sampling with 'Stan'
+Version: 0.1.0
+Authors@R: c(
+  person(given = "Donald", 
+    family = "Williams", 
+    role = c("aut", "cre"), 
+    email = "donald.williams@nwea.org"),
+  person(given = "Tyler", 
+    family = "Matta", 
+    role = c("aut"), 
+    email = "tyler.matta@nwea.org"),
+  person(given = "NWEA", 
+    role = "cph", 
+    email = "tyler.matta@nwea.org")
+  )
+Description: Fit Bayesian models in Stan <doi: 10.18637/jss.v076.i01> 
+  with checkpointing, that is, the ability to stop the MCMC sampler at 
+  will, and then pick right back up where the MCMC sampler left off. 
+  Custom 'Stan' models can be fitted, or the popular package 'brms' 
+  <doi: 10.18637/jss.v080.i01> can be used to generate the 'Stan' code. This 
+  package is fully compatible with the R packages 'brms', 'posterior', 'cmdstanr', 
+  and 'bayesplot'. 
+License: Apache License 2.0 | file LICENSE
+Depends: R (>= 4.1.0)
+Imports: brms (>= 2.16.1), abind, methods, Rdpack, rstan
+Suggests: cmdstanr, rmarkdown, knitr, posterior
+Encoding: UTF-8
+RoxygenNote: 7.1.2
+Additional_repositories: https://mc-stan.org/r-packages/
+RdMacros: Rdpack
+VignetteBuilder: knitr
+NeedsCompilation: no
+Packaged: 2022-04-21 13:06:34 UTC; Donald.Williams
+Author: Donald Williams [aut, cre],
+  Tyler Matta [aut],
+  NWEA [cph]
+Maintainer: Donald Williams <donald.williams@nwea.org>
+Repository: CRAN
+Date/Publication: 2022-04-22 09:20:08 UTC

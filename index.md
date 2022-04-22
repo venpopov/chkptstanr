@@ -16,3 +16,7 @@ including (but not limited to) the following:
   These instances are "a cost-effective choice if you can be flexible about 
   when your applications run and if your applications can be 
   *interrupted* [emphasis added]".
+  
+  **chkptstanr** thus allows for taking advantage of spot instances by 
+  enabling "interruptions" during model fitting. This can reduce the cost
+  by 90 %.

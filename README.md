@@ -1,6 +1,4 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # chkptstanr
 
 The goal of **chkptstanr** is to fit Bayesian models in Stan with
@@ -17,6 +15,8 @@ You can install the development version of **chkptstanr** like so:
 ``` r
 # install.packages("chkptstanr")
 ```
+
+These packages are needed
 
 ## Packages
 

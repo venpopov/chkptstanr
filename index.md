@@ -53,7 +53,7 @@ including (but not limited to) the following:
 You can install the development version of **chkptstanr** like so:
 
 ``` r
-# install.packages("chkptstanr")
+install.packages("chkptstanr")
 ```
 
 These packages are needed to run the following example.

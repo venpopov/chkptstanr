@@ -101,6 +101,36 @@ applications run and if your applications can be <em>interrupted</em>
 instances by enabling “interruptions” during model fitting. This can
 reduce the cost by 90 %.</p>
 </li>
+<li>
+<p><strong>Stan</strong> allows for fitting complex models. This
+often entails iteratively improving the model to ensure that the MCMC
+algorithm has converged. Typically this requires waiting until the model
+has <em>finished sampling</em>, and then assessing MCMC diagnostics
+(e.g., R-hat).</p>
+<p><strong>chkptstanr</strong> can be used to make iterative model
+building more<br>
+efficient, e.g., by having the ability to pause sampling and examine the
+model (e.g., convergence diagnostics), and then deciding to stop
+sampling or to continue on.</p>
+</li>
+<li>
+<p>Computationally intensive models can sometimes take several days
+to finish up. When using a personal computer, this can take up all the
+computing resources.</p>
+<p><strong>chkptstanr</strong> can be used with scheduling, such that
+the model is fitted during certain windows (e.g., at night, weekends,
+etc.)</p>
+</li>
+<li>
+<p>Those familiar with Bayesian methods will know all too well that
+a model can take longer than expected. This can be problematic when
+there is another task that needs to be completed, because one is faced
+with waiting it out or stopping the model (and loosing all of the
+progress).</p>
+<p><strong>chkptstanr</strong> makes it so that models can be
+conveniently stopped if need be, while not loosing any of the
+progress.</p>
+</li>
 </ul>
 </div>
   </div>

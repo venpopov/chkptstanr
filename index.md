@@ -20,3 +20,28 @@ including (but not limited to) the following:
   **chkptstanr** thus allows for taking advantage of spot instances by 
   enabling "interruptions" during model fitting. This can reduce the cost
   by 90 %.
+  
+* **Stan** allows for fitting complex models. This often entails 
+  iteratively improving the model to ensure that the MCMC algorithm
+  has converged. Typically this requires waiting until the model has 
+  *finished sampling*, and then assessing MCMC diagnostics (e.g., R-hat).
+  
+  **chkptstanr** can be used to make iterative model building more  
+  efficient, e.g., by having the ability to pause sampling and examine the model 
+  (e.g., convergence diagnostics), and then deciding to stop sampling or to continue on.
+  
+
+* Computationally intensive models can sometimes take several days to 
+  finish up. When using a personal computer, this can take up all 
+  the computing resources.
+  
+  **chkptstanr** can be used with scheduling, such that the model is fitted 
+  during certain windows (e.g., at night, weekends, etc.)
+
+* Those familiar with Bayesian methods will know all too well that a model can take 
+  longer than expected. This can be problematic when there is another task
+  that needs to be completed, because one is faced with
+  waiting it out or stopping the model (and loosing all of the progress).
+  
+  **chkptstanr** makes it so that models can be conveniently stopped 
+  if need be, while not loosing any of the progress.

@@ -16,7 +16,7 @@ You can install the development version of **chkptstanr** like so:
 # install.packages("chkptstanr")
 ```
 
-These packages are needed
+These packages are needed.
 
 ## Packages
 

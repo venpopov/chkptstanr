@@ -1,0 +1,1 @@
+# Checkpoint MCMC Sampling with Stan

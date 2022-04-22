@@ -132,6 +132,145 @@ conveniently stopped if need be, while not loosing any of the
 progress.</p>
 </li>
 </ul>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>You can install the development version of
+<strong>chkptstanr</strong> like so:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># install.packages("chkptstanr")</span></code></pre></div>
+<p>These packages are needed to run the following example.</p>
+</div>
+<div class="section level2">
+<h2 id="packages">Packages<a class="anchor" aria-label="anchor" href="#packages"></a>
+</h2>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">chkptstanr</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/lme4/lme4/" class="external-link">lme4</a></span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
+</h2>
+<p>The data are bundled with <code>R</code> package
+<strong>lme4</strong>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"VerbAgg"</span><span class="op">)</span>
+
+<span class="co"># 20 subjects</span>
+<span class="va">dat_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">VerbAgg</span>, <span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span><span class="op">)</span>
+
+<span class="co"># numeric outcome</span>
+<span class="va">dat_sub</span><span class="op">$</span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">dat_sub</span><span class="op">$</span><span class="va">r2</span> <span class="op">==</span> <span class="st">"Y"</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="rasch-model">Rasch Model<a class="anchor" aria-label="anchor" href="#rasch-model"></a>
+</h2>
+<p>To demonstrate how to use <strong>chkptstanr</strong>, we fit a Rasch
+model with I fixed item effects and random person effects. This can be
+done with familiar <strong>lme4</strong> style syntax, i.e.,</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># brmsformula object</span>
+<span class="va">m1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/brms/man/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">item</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">id</span><span class="op">)</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">binomial</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="section level3">
+<h3 id="storage">Storage<a class="anchor" aria-label="anchor" href="#storage"></a>
+</h3>
+<p>The additional overhead is to create a folder that will store the
+checkpoints, i.e.,</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_folder.html">create_folder</a></span><span class="op">(</span>folder_name <span class="op">=</span> <span class="st">"chkpt_folder_m1"</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="model-fitting">Model Fitting<a class="anchor" aria-label="anchor" href="#model-fitting"></a>
+</h3>
+<p>The primary use of <strong>chkptstanr</strong> is to sample from the
+posterior distribution, while having the option of starting and stopping
+the sampler at will.</p>
+<p>To make this clear, we stopped the following after 2 checkpoints.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fit_m1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">m1</span>, 
+                     data <span class="op">=</span> <span class="va">dat_sub</span>,
+                     path  <span class="op">=</span> <span class="va">path</span>,
+                     iter_warmup <span class="op">=</span> <span class="fl">1000</span>,
+                     iter_sampling <span class="op">=</span> <span class="fl">1000</span>,
+                     iter_per_chkpt <span class="op">=</span> <span class="fl">250</span><span class="op">)</span>
+
+
+<span class="co">#&gt; Compiling Stan program...</span>
+<span class="co">#&gt; Initial Warmup (Typical Set)</span>
+<span class="co">#&gt; Chkpt: 1 / 8; Iteration: 250 / 2000 (warmup)</span>
+<span class="co">#&gt; Chkpt: 2 / 8; Iteration: 500 / 2000 (warmup)</span></code></pre></div>
+<p>To start at the next checkpoint, rerun the same code.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fit_m1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">m1</span>, 
+                     data <span class="op">=</span> <span class="va">dat_sub</span>,
+                     path  <span class="op">=</span> <span class="va">path</span>,
+                     iter_warmup <span class="op">=</span> <span class="fl">1000</span>,
+                     iter_sampling <span class="op">=</span> <span class="fl">1000</span>,
+                     iter_per_chkpt <span class="op">=</span> <span class="fl">250</span><span class="op">)</span>
+
+<span class="co">#&gt; Sampling next checkpoint</span>
+<span class="co">#&gt; Chkpt: 3 / 8; Iteration: 750 / 2000 (warmup)</span>
+<span class="co">#&gt; Chkpt: 4 / 8; Iteration: 1000 / 2000 (warmup)</span>
+<span class="co">#&gt; Chkpt: 5 / 8; Iteration: 1250 / 2000 (sample)</span>
+<span class="co">#&gt; Chkpt: 6 / 8; Iteration: 1500 / 2000 (sample)</span>
+<span class="co">#&gt; Chkpt: 7 / 8; Iteration: 1750 / 2000 (sample)</span>
+<span class="co">#&gt; Chkpt: 8 / 8; Iteration: 2000 / 2000 (sample)</span>
+<span class="co">#&gt; Checkpointing complete</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
+</h3>
+<p>A key advantage of <code>chkpt_brms</code> is that it returns a
+<code>brmsfit</code> object, as seen when printing the summary
+output.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fit_m1</span>
+
+<span class="co">#&gt;  Family: binomial </span>
+<span class="co">#&gt;   Links: mu = logit </span>
+<span class="co">#&gt; Formula: y ~ 0 + item + (1 | id) </span>
+<span class="co">#&gt;    Data: data (Number of observations: 480) </span>
+<span class="co">#&gt;   Draws: 2 chains, each with iter = 1000; warmup = 0; thin = 1;</span>
+<span class="co">#&gt;          total post-warmup draws = 2000</span>
+
+<span class="co">#&gt; Group-Level Effects: </span>
+<span class="co">#&gt; ~id (Number of levels: 20) </span>
+<span class="co">#&gt;               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
+<span class="co">#&gt; sd(Intercept)     1.68      0.36     1.07     2.46 1.00      683      742</span>
+
+<span class="co">#&gt; Population-Level Effects: </span>
+<span class="co">#&gt;                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span>
+<span class="co">#&gt; itemS1WantCurse     1.53      0.78     0.07     3.09 1.00      883     1034</span>
+<span class="co">#&gt; itemS1WantScold    -0.38      0.64    -1.61     0.86 1.00      743      888</span>
+<span class="co">#&gt; itemS1WantShout     0.49      0.64    -0.69     1.77 1.00      742     1084</span>
+<span class="co">#&gt; itemS2WantCurse     2.02      0.80     0.51     3.61 1.00      837      939</span>
+<span class="co">#&gt; itemS2WantScold    -0.65      0.64    -1.97     0.58 1.00      854     1001</span>
+<span class="co">#&gt; itemS2WantShout     0.51      0.67    -0.80     1.81 1.00      696      931</span>
+<span class="co">#&gt; itemS3WantCurse     1.16      0.72    -0.24     2.61 1.00      764     1169</span>
+<span class="co">#&gt; itemS3WantScold    -1.98      0.76    -3.54    -0.59 1.00      799     1122</span>
+<span class="co">#&gt; itemS3WantShout    -0.08      0.64    -1.33     1.21 1.00      725     1109</span>
+<span class="co">#&gt; itemS4wantCurse    -0.09      0.65    -1.41     1.12 1.00      736     1007</span>
+<span class="co">#&gt; itemS4WantScold    -3.07      0.93    -5.07    -1.44 1.00     1065     1131</span>
+<span class="co">#&gt; itemS4WantShout    -3.07      0.93    -5.01    -1.41 1.00     1095     1250</span>
+<span class="co">#&gt; itemS1DoCurse       2.57      0.95     0.78     4.55 1.00     1125      988</span>
+<span class="co">#&gt; itemS1DoScold       0.51      0.67    -0.80     1.85 1.00      738     1085</span>
+<span class="co">#&gt; itemS1DoShout       0.21      0.64    -0.97     1.47 1.00      753     1241</span>
+<span class="co">#&gt; itemS2DoCurse       1.97      0.80     0.49     3.61 1.00      828     1088</span>
+<span class="co">#&gt; itemS2DoScold      -0.09      0.64    -1.35     1.18 1.00      759      991</span>
+<span class="co">#&gt; itemS2DoShout      -1.24      0.67    -2.58     0.08 1.00      778      903</span>
+<span class="co">#&gt; itemS3DoCurse       0.20      0.66    -1.16     1.50 1.00      657     1091</span>
+<span class="co">#&gt; itemS3DoScold      -2.44      0.82    -4.22    -0.98 1.00      976     1012</span>
+<span class="co">#&gt; itemS3DoShout      -3.07      0.97    -5.13    -1.36 1.00      999     1186</span>
+<span class="co">#&gt; itemS4DoCurse       0.20      0.65    -1.03     1.48 1.00      730     1307</span>
+<span class="co">#&gt; itemS4DoScold      -0.37      0.63    -1.66     0.88 1.00      709     1064</span>
+<span class="co">#&gt; itemS4DoShout      -2.44      0.81    -4.14    -0.97 1.00      799     1077</span>
+
+<span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span>
+<span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span>
+<span class="co">#&gt; scale reduction factor on split chains (at convergence, Rhat = 1).</span></code></pre></div>
+</div>
+</div>
 </div>
   </div>
 

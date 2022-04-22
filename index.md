@@ -11,8 +11,8 @@ There are a variety of use cases for **chkptstanr**,
 including (but not limited to) the following:
 
 * The primary motivation for developing  \strong{chkptstanr} is to
-reduce the cost of fitting models with \strong{Stan} when using, say, AWS,
-and in particular by taking advantage of so-called \emph{spot instances}.  
-These instances are "a cost-effective choice if you can be flexible about 
-when your applications run and if your applications can be 
-*interrupted* [emphasis added]"  
+  reduce the cost of fitting models with \strong{Stan} when using, say, AWS,
+  and in particular by taking advantage of so-called *spot instances*. 
+  These instances are "a cost-effective choice if you can be flexible about 
+  when your applications run and if your applications can be 
+  *interrupted* [emphasis added]".

@@ -81,22 +81,22 @@
 </h1></div>
 <p>Fit Bayesian models in <strong>Stan</strong> with checkpointing, that
 is, the ability to stop the HMC sampler at will, and then pick right
-back up where the sampler left off. Custom <strong>Stan</strong> models.
-Custom <strong>Stan</strong> models can be fitted, or the popular
-package <strong>brms</strong> can be used to generate the
-<strong>Stan</strong> code. This package is fully compatible with the
-<em>R</em> packages <strong>brms</strong>, <strong>posterior</strong>,
-<strong>cmdstanr</strong>, and <strong>bayesplot</strong></p>
+back up where the sampler left off. Custom <strong>Stan</strong> models
+can be fitted, or the popular package <strong>brms</strong> can be used
+to generate the <strong>Stan</strong> code. This package is fully
+compatible with the <em>R</em> packages <strong>brms</strong>,
+<strong>posterior</strong>, <strong>cmdstanr</strong>, and
+<strong>bayesplot</strong></p>
 <p>There are a variety of use cases for <strong>chkptstanr</strong>,
 including (but not limited to) the following:</p>
 <ul>
 <li>
-<p>The primary motivation for developing is to reduce the cost of
-fitting models with when using, say, AWS, and in particular by taking
-advantage of so-called <em>spot instances</em>. These instances are “a
-cost-effective choice if you can be flexible about when your
-applications run and if your applications can be <em>interrupted</em>
-[emphasis added]”.</p>
+<p>The primary motivation for developing <strong>chkptstanr</strong>
+is to reduce the cost of fitting models with <strong>Stan</strong> when
+using, say, AWS, and in particular by taking advantage of so-called
+<em>spot instances</em>. These instances are “a cost-effective choice if
+you can be flexible about when your applications run and if your
+applications can be <em>interrupted</em> [emphasis added]”.</p>
 <p><strong>chkptstanr</strong> thus allows for taking advantage of spot
 instances by enabling “interruptions” during model fitting. This can
 reduce the cost by 90 %.</p>
@@ -139,7 +139,7 @@ progress.</p>
 <strong>chkptstanr</strong> like so:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"chkptstanr"</span><span class="op">)</span></code></pre></div>
-<p>These packages are needed to run the following example.</p>
+<p>The following packages are needed to run the example.</p>
 </div>
 <div class="section level2">
 <h2 id="packages">Packages<a class="anchor" aria-label="anchor" href="#packages"></a>
@@ -152,7 +152,7 @@ progress.</p>
 <div class="section level2">
 <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
 </h2>
-<p>The data are bundled with <code>R</code> package
+<p>The illustrative data are bundled with <code>R</code> package
 <strong>lme4</strong>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"VerbAgg"</span><span class="op">)</span>

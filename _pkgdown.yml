@@ -1,2 +1,24 @@
-url: ~
+home:
+  title: chkptstanr
+  links:
+  - text: Ask a question about chkptstanr
+    href: https://github.com/donaldRwilliams/chkptstanr
 
+url: https://github.com/donaldRwilliams/chkptstanr
+template:
+  params:
+    bootswatch: flatly
+  opengraph:
+    image:
+      src: man/figures/trace_f2.png
+    twitter:
+      creator: "@wdonald_1985"
+      card: summary
+navbar:
+  title: "chkptstanr"
+  left:
+    - text: "Functions"
+      href: reference/index.html
+    - text: "Vignettes"
+      href: articles/index.html
+    

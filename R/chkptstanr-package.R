@@ -21,7 +21,7 @@
 #' These instances are "a cost-effective choice if you can be flexible about 
 #' when your applications run and if your applications can be 
 #' \emph{interrupted} \[emphasis added\]"  
-#' (\href{https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html}{AWS website}).
+#' (\href{https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html}{(AWS website)}).
 #' 
 #' \strong{chkptstanr} thus allows for taking advantage of spot instances by 
 #' enabling "interruptions" during model fitting. This can reduce the cost

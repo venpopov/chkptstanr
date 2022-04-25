@@ -1,69 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/404.html</loc>
   </url>
   <url>
-    <loc>/articles/chkpt_brms.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/articles/chkpt_brms.html</loc>
   </url>
   <url>
-    <loc>/articles/chkpt_stan.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/articles/chkpt_stan.html</loc>
   </url>
   <url>
-    <loc>/articles/index.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/articles/index.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/authors.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/index.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/reference/chkptstanr-package.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/chkptstanr-package.html</loc>
   </url>
   <url>
-    <loc>/reference/chkpt_brms.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/chkpt_brms.html</loc>
   </url>
   <url>
-    <loc>/reference/chkpt_setup.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/chkpt_setup.html</loc>
   </url>
   <url>
-    <loc>/reference/chkpt_stan.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/chkpt_stan.html</loc>
   </url>
   <url>
-    <loc>/reference/combine_chkpt_draws.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/combine_chkpt_draws.html</loc>
   </url>
   <url>
-    <loc>/reference/create_folder.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/create_folder.html</loc>
   </url>
   <url>
-    <loc>/reference/extract_chkpt_draws.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/extract_chkpt_draws.html</loc>
   </url>
   <url>
-    <loc>/reference/extract_hmc_info.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/extract_hmc_info.html</loc>
   </url>
   <url>
-    <loc>/reference/extract_stan_state.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/extract_stan_state.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/make_brmsfit.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/make_brmsfit.html</loc>
   </url>
   <url>
-    <loc>/reference/print.chkpt_brms.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/print.chkpt_brms.html</loc>
   </url>
   <url>
-    <loc>/reference/print.chkpt_setup.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/print.chkpt_setup.html</loc>
   </url>
   <url>
-    <loc>/reference/print.chkpt_stan.html</loc>
+    <loc>https://github.com/donaldRwilliams/chkptstanr/reference/print.chkpt_stan.html</loc>
   </url>
 </urlset>

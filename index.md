@@ -1,10 +1,13 @@
 # Checkpoint MCMC Sampling with Stan
 
-Fit Bayesian models in **Stan** with checkpointing, that is, the ability to stop 
-the HMC sampler at will, and then pick right back up where the sampler left off. 
-Custom **Stan** models can be fitted, or the popular package **brms**
-can be used to generate the **Stan** code. This package is fully compatible with the 
-*R* packages **brms**, **posterior**, **cmdstanr**, and **bayesplot**
+Fit Bayesian models in **Stan** (Carpenter et al. 2017) with checkpointing, that is, 
+the ability to stop the HMC sampler at will, and then pick right back up where the 
+sampler left off. Custom **Stan** models can be fitted, or the popular package 
+**brms** (Bürkner 2017) can be used to generate the **Stan** code. This package 
+is fully compatible with the `R` packages 
+[**brms**](http://paul-buerkner.github.io/brms/), [**posterior**](https://mc-stan.org/posterior/), 
+[**cmdstanr**](https://mc-stan.org/cmdstanr/), 
+and [**bayesplot**](https://mc-stan.org/bayesplot/).
 
 There are a variety of use cases for **chkptstanr**, 
 including (but not limited to) the following:
@@ -14,7 +17,8 @@ including (but not limited to) the following:
   and in particular by taking advantage of so-called *spot instances*. 
   These instances are "a cost-effective choice if you can be flexible about 
   when your applications run and if your applications can be 
-  *interrupted* [emphasis added]".
+  *interrupted* [emphasis added]" 
+  [AWS website]((https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html)).
   
   **chkptstanr** thus allows for taking advantage of spot instances by 
   enabling "interruptions" during model fitting. This can reduce the cost
@@ -194,3 +198,11 @@ fit_m1
 #> and Tail_ESS are effective sample size measures, and Rhat is the potential
 #> scale reduction factor on split chains (at convergence, Rhat = 1).
 ```
+
+## References
+
+Bürkner P (2017). “brms: An R package for Bayesian multilevel models using Stan.” 
+Journal of statistical software, 80, 1–28.
+
+Carpenter B, Gelman A, Hoffman MD, Lee D, Goodrich B, Betancourt M, Brubaker M, 
+Guo J, Li P, Riddell A (2017). “Stan: A probabilistic programming language.” Journal of statistical software, 76(1).

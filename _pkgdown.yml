@@ -10,7 +10,7 @@ template:
     bootswatch: flatly
   opengraph:
     image:
-      src: man/figures/hex.jpg
+      src: man/figures/logo.png
     twitter:
       creator: "@wdonald_1985"
       card: summary

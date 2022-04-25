@@ -277,7 +277,7 @@ Note that the arguments need to be exactly the same when restarting.
 There is a check for `data`, `formula`, `iter_per_chkpt`, etc., and if they
 have been changed, this will produce an error (with an informative warning message).
 
-## Diagonistics
+## Diagnostics
 
 Some diagnostic information is provided in the summary output.
 
@@ -302,7 +302,7 @@ fit_m2
 #> scale reduction factor on split chains (at convergence, Rhat = 1).
 ```
 
-These diagnostics indicate the model converged.
+These diagnostics indicate the inference converged.
 
 ## More Diagnostics
 

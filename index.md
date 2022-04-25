@@ -59,9 +59,12 @@ You can install the development version of **chkptstanr** like so:
 install.packages("chkptstanr")
 ```
 
-The following packages are needed to run the example.
+
 
 ## Packages
+
+The following packages are needed to run the example.
+
 ```r
 library(chkptstanr)
 library(brms)

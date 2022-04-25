@@ -1,5 +1,5 @@
 
-# chkptstanr <img src="man/figures/logo.png" align="right" />
+# chkptstanr
 
 The goal of **chkptstanr** is to fit Bayesian models in Stan with
 checkpointing, that is, the ability to stop the MCMC sampler at will,

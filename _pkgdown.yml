@@ -4,7 +4,7 @@ home:
   - text: Ask a question about chkptstanr
     href: https://github.com/donaldRwilliams/chkptstanr
 
-url: https://donaldrwilliams.github.io/chkptstanr
+url: https://donaldrwilliams.github.io/chkptstanr/
 template:
   params:
     bootswatch: flatly

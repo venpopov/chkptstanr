@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# chkptstanr
+# chkptstanr <img src="man/figures/logo.png" align="right" />
 
 The goal of **chkptstanr** is to fit Bayesian models in Stan with checkpointing, 
 that is, the ability to stop the MCMC sampler at will, and then pick

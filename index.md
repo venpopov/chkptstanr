@@ -1,4 +1,4 @@
-# Checkpoint MCMC Sampling with Stan
+# Checkpoint MCMC Sampling with Stan 
 
 Fit Bayesian models in **Stan** (Carpenter et al. 2017) with checkpointing, that is, 
 the ability to stop the HMC sampler at will, and then pick right back up where the 

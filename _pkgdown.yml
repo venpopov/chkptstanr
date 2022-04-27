@@ -21,4 +21,6 @@ navbar:
       href: reference/index.html
     - text: "Vignettes"
       href: articles/index.html
+    - text: "News"
+      href: news/index.html
     

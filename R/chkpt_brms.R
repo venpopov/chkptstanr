@@ -202,16 +202,16 @@ chkpt_brms <- function(formula,
     )
 
   }
-
-  if (isFALSE(check_for_model("model_threads.exe", path))) {
-
+  
+  model_threads_name <- ifelse(.Platform$OS.type == "unix", 
+                               "model_threads", 
+                               "model_threads.exe")
+  
+  if (isFALSE(check_for_model(eval(model_threads_name), path))) {
     stan_m3 <- cmdstanr::cmdstan_model(stan_file = stan_code_path,
-                             cpp_options = list(stan_threads = TRUE))
-
+                                       cpp_options = list(stan_threads = TRUE))
     saveRDS(stan_m3, file = paste0(path, "/stan_model/comp.rds"))
-
     saveRDS(args, paste0(path, "/stan_model/args.rds"))
-
   } else {
 
     initial_args <- readRDS(paste0(path, "/stan_model/args.rds"))

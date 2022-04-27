@@ -1,6 +1,10 @@
 
 # chkptstanr <img src="man/figures/logo.png" align="right" width = 250 />
 
+[![CRAN
+Version](http://www.r-pkg.org/badges/version/chkptstanr)](https://cran.r-project.org/package=chkptstanr)
+[![Downloads](https://cranlogs.r-pkg.org/badges/chkptstanr)](https://cran.r-project.org/package=chkptstanr)
+
 The goal of **chkptstanr** is to fit Bayesian models in Stan with
 checkpointing, that is, the ability to stop the MCMC sampler at will,
 and then pick right back up where the MCMC sampler left off. Custom Stan

@@ -83,7 +83,7 @@ including, for example, user-defined prior distributions and the
 }
 \value{
 An object of class \code{brmsfit} (with \code{brmsfit = TRUE})
-or \code{chkpt_brms} (with \code{brmsfit = FALSE})
+or \code{chkpt_brms} (with \code{brmsfit = FALSE}).
 }
 \description{
 Fit Bayesian generalized (non-)linear multivariate multilevel models using brms

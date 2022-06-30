@@ -64,7 +64,7 @@
 #'            \code{\link[brms]{brmsfamily}} (e.g., \code{family = poisson())}.
 #'
 #' @return An object of class \code{brmsfit} (with \code{brmsfit = TRUE}) 
-#'         or \code{chkpt_brms} (with \code{brmsfit = FALSE}) 
+#'         or \code{chkpt_brms} (with \code{brmsfit = FALSE}).
 #'
 #' @importFrom brms make_standata make_stancode threading bf
 #' @importFrom rstan read_stan_csv

@@ -108,7 +108,7 @@ posterior::summarise_draws(draws)
 # eight schools example
  
 # path for storing checkpoint info
-path <- create_folder(parent_folder = "chkpt_folder_fit2")
+path <- create_folder(folder_name = "chkpt_folder_fit2")
 
 stan_code <- "
 data {

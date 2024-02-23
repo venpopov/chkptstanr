@@ -198,6 +198,8 @@ chkpt_brms <- function(formula,
     )
   }
   
+  stan_code_path <- paste0(path, "/stan_model/model.stan")
+  
   if (isFALSE(check_for_model("model.stan", path))) {
 
     stan_code_path <- cmdstanr::write_stan_file(

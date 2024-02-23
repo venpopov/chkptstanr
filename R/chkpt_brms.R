@@ -282,22 +282,10 @@ chkpt_brms <- function(formula,
     
     
      if (brmsfit) {
-      
-      if (is.null(args$prior)) {
-        
         returned_object <- make_brmsfit(formula = formula,
                                         data = data,
-                                        path = path)
-        
-      } else {
-        
-        returned_object <- make_brmsfit(
-          formula = formula,
-          prior = args$prior,
-          data = data,
-          path = path
-        )
-      }
+                                        path = path,
+                                        ...)
       
     } else {
       
@@ -385,22 +373,10 @@ chkpt_brms <- function(formula,
   }
 
   if (brmsfit) {
-    
-    if (is.null(args$prior)) {
-      
       returned_object <- make_brmsfit(formula = formula,
                                       data = data,
-                                      path = path)
-      
-    } else {
-      returned_object <- make_brmsfit(
-        formula = formula,
-        prior = args$prior,
-        data = data,
-        path = path
-      )
-    }
-    
+                                      path = path, 
+                                      ...)
   } else {
     
     returned_object <- list(args = args)

@@ -55,6 +55,10 @@
 #' 
 #' @param seed (positive integer). The seed for random number generation to 
 #'             make results reproducible.
+#'             
+#' @param stop_after (positive integer). The number of checkpoints to sample
+#'                  before stopping. If \code{NULL}, then all checkpoints are
+#'                  sampled (defaults to \code{NULL}). Used only for testing
 #' 
 #' @param path Character string. The path to the folder, that is used for 
 #'             saving the checkpoints.
@@ -150,6 +154,7 @@ chkpt_brms <- function(formula,
                        control = NULL,
                        brmsfit = TRUE,
                        seed = 1,
+                       stop_after = NULL,
                        path, ...){
   
   
@@ -308,6 +313,11 @@ chkpt_brms <- function(formula,
   }
 
   for (i in cp_seq) {
+    
+    if (!is.null(stop_after) && i > stop_after) {
+      message("Stopping after ", stop_after, " checkpoints")
+      stop_quietly()
+    }
 
     if (i <= warmup_chkpts) {
 

@@ -12,6 +12,24 @@ model can be fitted, or the popular package brms can be used to generate
 the Stan code. This package is fully compatible with the `R` packages
 **brms**, **posterior**, **cmdstanr**, and **bayesplot**.
 
+## About this fork
+
+The original package was developed by [Donald R.
+Williams](https://github.com/donaldRwilliams/chkptstanr). However, the
+package has not been updated in 2 years, despite breaking issues. I have
+submitted PR requests for fixes to the original repository. Until they
+are accepted, I will maintain this fork. This is because I love the idea
+of this package and I want to use it in my own work.
+
+Until the PRs are accepted, you can install the working version of this
+package from this repository.
+
+``` r
+remotes::install_github("venpopov/chkptstanr")
+```
+
+(below continues the original README.md file)
+
 ## Installation
 
 You can install the development version of **chkptstanr** like so:

@@ -29,7 +29,6 @@ Imports:
   brms (>= 2.16.1),
   abind,
   methods,
-  Rdpack,
   rstan
 Suggests:
     cmdstanr,

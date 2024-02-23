@@ -34,7 +34,8 @@ Suggests:
     cmdstanr,
     rmarkdown,
     knitr,
-    posterior
+    posterior,
+    testthat (>= 3.0.0)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
@@ -42,3 +43,4 @@ Additional_repositories:
   https://mc-stan.org/r-packages/
 RdMacros: Rdpack
 VignetteBuilder: knitr
+Config/testthat/edition: 3

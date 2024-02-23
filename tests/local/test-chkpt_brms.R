@@ -15,8 +15,8 @@ test_that('chkpt_brms picks up after stopping', {
     formula = bf_m1,
     data = brms::epilepsy,
     path  = path,
-    iter_warmup = 1000,
-    iter_sampling = 1000,
+    iter_warmup = 100,
+    iter_sampling = 200,
     iter_per_chkpt = 100,
     stop_after = 1
   ), silent = T)
@@ -25,11 +25,11 @@ test_that('chkpt_brms picks up after stopping', {
   
   res <- try(chkpt_brms(
     formula = bf_m1,
-    data = epilepsy,
+    data = brms::epilepsy,
     path  = path,
-    iter_warmup = 1000,
-    iter_sampling = 1000,
-    iter_per_chkpt = 100
+    iter_warmup = 100,
+    iter_sampling = 200,
+    iter_per_chkpt = 100,
   ), silent=T)
   
   expect_false(is(res, 'try-error'))

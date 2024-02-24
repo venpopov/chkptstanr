@@ -20,7 +20,7 @@ test_that("chkpt_stan picks up after stopping", {
     iter_warmup = 100,
     iter_sampling = 200,
     iter_per_chkpt = 100,
-    stop_after = 1,
+    stop_after = 100,
     path = path
   ), silent = T)
 
@@ -34,7 +34,7 @@ test_that("chkpt_stan picks up after stopping", {
     iter_per_chkpt = 100,
     path = path
   ), silent = T)
-  
+
   print(res)
 
   expect_false(is(res, "try-error"))

@@ -8,6 +8,10 @@ on:
 
 name: R-CMD-check
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
@@ -28,7 +32,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: n1hility/cancel-previous-runs@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 

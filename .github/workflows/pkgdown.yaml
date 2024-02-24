@@ -9,6 +9,9 @@ on:
     types: [published]
   workflow_dispatch:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 name: pkgdown
 
@@ -24,7 +27,6 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - uses: n1hility/cancel-previous-runs@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 

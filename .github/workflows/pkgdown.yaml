@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: web-${{ github.ref }}
   cancel-in-progress: true
 
 name: pkgdown
@@ -38,6 +38,8 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          dependencies: NA
+          needs: website
           extra-packages: |
             rmarkdown
             knitr
@@ -47,8 +49,8 @@ jobs:
             stan-dev/cmdstanr
             any::pkgdown
             local::.
-          needs: website
-          dependencies: NA
+
+
           
           
       - name: Build Cmdstan

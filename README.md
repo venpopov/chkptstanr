@@ -16,26 +16,23 @@ the Stan code. This package is fully compatible with the `R` packages
 
 The original package was developed by [Donald R.
 Williams](https://github.com/donaldRwilliams/chkptstanr). However, the
-package has not been updated in 2 years, despite breaking issues. I have
-submitted PR requests for fixes to the original repository. Until they
-are accepted, I will maintain this fork. This is because I love the idea
-of this package and I want to use it in my own work.
-
-Until the PRs are accepted, you can install the working version of this
-package from this repository.
-
-``` r
-remotes::install_github("venpopov/chkptstanr")
-```
-
-(below continues the original README.md file)
+package has not been updated in 2 years, despite breaking issues. Donald
+has kindly agreed for me to take over the package maintenance and
+development.
 
 ## Installation
 
-You can install the development version of **chkptstanr** like so:
+You can install the CRAN version of **chkptstanr** like so:
 
 ``` r
 # install.packages("chkptstanr")
+```
+
+The CRAN version has several bugs, and until the next release, you can
+install the development version from GitHub:
+
+``` r
+remotes::install_github("venpopov/chkptstanr")
 ```
 
 These packages are needed.

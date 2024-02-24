@@ -7,6 +7,7 @@
 ### New features
 
 * chkpt_brms() now works with any brm() arguments, including custom families, data2, etc ([issue #15](https://github.com/donaldRwilliams/chkptstanr/issues/15))
+* create_folder() does not give an error if a folder already exist, it just returns the path
 
 ### Bug fixes
 * Fix major bug "stan_code_path" not found when resuming sampling ([issue #8](https://github.com/donaldRwilliams/chkptstanr/issues/8)]

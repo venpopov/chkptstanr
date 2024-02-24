@@ -1,96 +1,93 @@
 #' @title Create Folder for Checkpointing
 #'
-#' @description Create the folder for checkingpointing, which
-#'              will "house" additional folders for the \code{.stan}
-#'              model, checkpointing information, and draws from the
-#'              posterior distribution.
+#' @description Create the folder for checkingpointing, which will "house"
+#'   additional folders for the \code{.stan} model, checkpointing information,
+#'   and draws from the posterior distribution.
 #'
-#' @param folder_name Character string. Desired name for the "parent"
-#'                    folder (defaults to \code{checkpoint}).
-#' 
-#' @param path Character string, when specified. Defaults to \code{NULL},
-#'             which then makes the folder in the working directory.
-#'            
-#' @note 
-#' 
+#' @param folder_name Character string. Desired name for the "parent" folder
+#'   (defaults to \code{checkpoint}).
+#'
+#' @param path Character string, when specified. Defaults to \code{NULL}, which
+#'   then makes the folder in the working directory.
+#'   
+#' @param return_relative Logical. When \code{TRUE}, the relative path to the
+#'  current working directory is returned. When \code{FALSE}, the full path is
+#'  returned. Defaults to \code{TRUE}.
+#'  
+#' @param warnings Logical. When \code{TRUE}, a warning is given if the folder
+#'  already exists. Defaults to \code{TRUE}.
+#'
+#' @note
+#'
 #' This creates a directory with four folders:
-#' 
+#'
 #' \itemize{
-#' 
-#' \item \strong{cmd_fit}: The cmdstanr fittted models (one for each checkpoint). 
-#' 
-#' \item \strong{cp_info}: Mass matrix, step size, and initial values for 
+#'
+#' \item \strong{cmd_fit}: The cmdstanr fittted models (one for each checkpoint).
+#'
+#' \item \strong{cp_info}: Mass matrix, step size, and initial values for
 #'                       next checkpoint (last iteration from previous checkpoint).
-#'                       
-#' \item \strong{cp_samples}: Samples from the posterior distribution  
+#'
+#' \item \strong{cp_samples}: Samples from the posterior distribution
 #'                            (post warmup)
-#' 
+#'
 #' \item \strong{stan_model}: Complied \strong{Stan} model
-#' 
+#'
 #' }
-#' 
+#'
 #' @export
-#' 
-#' @return No return value, and instead creates a directory with
-#' folders that will contain the checkpointing samples and other 
-#' information.
-#' 
-#' @examples 
+#'
+#' @details If the folders already exist, the function will give a warning, but
+#'   still return the path to the main parent folder. It will not overwrite any
+#'   existing files. This is implemented so that the user can re-run a full
+#'   script without getting an error. If you get this warning during the first
+#'   time you run the script, consider carefully if this is the desired folder
+#'   to save the checkpointing files.
+#'
+#' @return the path to the main parent folder containing the four subfolders.
+#'   This path should be used as the \code{path} argument in
+#'   \code{\link{chkpt_brms}}. If \code{return_relative = TRUE}, the relative
+#'   path to the current working directory is returned. If \code{path} is
+#'   specified or \code{return_relative = FALSE}, the full path is returned.
+#'
+#' @examples
+#' # create initial folder
 #' path <- create_folder(folder_name = "cp_folder")
+#' path
+#' unlink("cp_folder", recursive = TRUE) # remove folder
 #' 
+#' # not-relative return
+#' path <- create_folder(folder_name = "cp_folder", return_relative = FALSE)
+#' path#' 
+#' identical(dir(path), c("cmd_fit", "cp_info", "cp_samples", "stan_model"))
+#'
 #' # remove folder
 #' unlink("cp_folder", recursive = TRUE)
-create_folder <- function(folder_name = "cp_folder", 
-                          path = NULL) {
-  
-  if (is.null(path)) {
-    
-    path <- paste0(getwd(),  paste0("/", folder_name))
-    
-    if (dir.exists(paths = path)) {
-      stop("folder already exists")
-      
-    }
-    
-    dir.create(path)
-    
-    dir.create(paste0(path, "/stan_model"))
-    
-    dir.create(paste0(path, "/cp_info"))
-    
-    dir.create(paste0(path, "/cp_samples"))
-    
-    dir.create(paste0(path, "/cmd_fit"))
-    
-    return(path)
-    
-  } else {
-    
-    if(isFALSE(is.character(path))){
-      stop("path must be a character string.")
-    }
-    
-    path <- paste0(path,  paste0("/", folder_name))
-    
-    if (dir.exists(paths = path)) {
-      stop("folder already exists")
-      
-    }
-    
-    dir.create(path)
-    
-    dir.create(paste0(path, "/stan_model"))
-    
-    dir.create(paste0(path, "/cp_info"))
-    
-    dir.create(paste0(path, "/cp_samples"))
-    
-    dir.create(paste0(path, "/cmd_fit"))
-    
-    return(path)
-    
+#' identical(dir(path), character(0))
+#'
+#' # repeat - no warning
+#' path <- create_folder(folder_name = "cp_folder")
+#'
+#' # repeat - warning, but folders are kept
+#' path <- create_folder(folder_name = "cp_folder")
+#' identical(dir(path), c("cmd_fit", "cp_info", "cp_samples", "stan_model"))
+#'
+#' unlink("cp_folder", recursive = TRUE)
+#' 
+#' # specify nested folder
+#' path <- create_folder(folder_name = "nested_folder/cp_folder")
+#' path
+#' unlink("nested_folder", recursive = TRUE) # remove folder
+create_folder <- function(folder_name = "cp_folder", path = NULL, return_relative = TRUE, warnings = TRUE) {
+  out <- file_path2(path, folder_name)
+  subfolders <- c("cmd_fit", "cp_info", "cp_samples", "stan_model")
+  subpaths <- file_path2(out, subfolders)
+  for (d in subpaths) {
+    dir.create(d, recursive = TRUE, showWarnings = warnings)
   }
-  
+  if (return_relative || !is.null(path)) {
+    return(out)
+  } else {
+    return(file_path2(getwd(), out))
+  }
 }
-
-

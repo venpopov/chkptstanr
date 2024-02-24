@@ -1,5 +1,21 @@
 #' @importFrom utils capture.output packageVersion
 
+# wrapper around file path ignoring null values
+file_path2 <- function(...) {
+  dots <- list(...)
+  dots <- dots[!sapply(dots, is.null)]
+  do.call(file.path, dots)
+}
+
+rstring <- function(n = 10, char_set = c(letters, LETTERS, 0:9), seed = NULL) {
+  if (is.null(seed)) {
+    seed <- sample.int(.Machine$integer.max, 1L)
+  }
+  withr::with_seed(seed, {
+    return(paste0(sample(char_set, n, replace = TRUE), collapse = ""))
+  })
+}
+
 # find so-called `typical set`
 chkpt_typical <- function(model,
                           cmd_args,

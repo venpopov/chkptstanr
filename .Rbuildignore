@@ -11,3 +11,4 @@
 ^Meta$
 ^tests/local$
 ^.github$
+^local$

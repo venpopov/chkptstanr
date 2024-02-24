@@ -23,7 +23,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
+      - uses: n1hility/cancel-previous-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -33,8 +36,24 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::.
+          extra-packages: |
+            rmarkdown
+            knitr
+            posterior
+            here
+            testthat
+            stan-dev/cmdstanr
+            any::pkgdown
+            local::.
           needs: website
+          dependencies: NA
+          
+          
+      - name: Build Cmdstan
+        run: |
+          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
+          cmdstanr::install_cmdstan(cores = parallel::detectCores())
+        shell: Rscript {0}          
 
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
@@ -47,3 +66,4 @@ jobs:
           clean: false
           branch: gh-pages
           folder: docs
+

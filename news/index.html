@@ -58,14 +58,15 @@
 </ul></div>
 <div class="section level4">
 <h4 id="new-features-0-1-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-1"></a></h4>
-<ul><li>chkpt_brms() now works with any brm() arguments, including custom families, data2, etc (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/15" class="external-link">issue </a><a href="https://github.com/venpopov/chkptstanr/issues/15" class="external-link">#15</a>)</li>
+<ul><li>chkpt_brms() now works with any brm() arguments, including custom families, data2, etc (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/15" class="external-link">original issue </a><a href="https://github.com/venpopov/chkptstanr/issues/15" class="external-link">#15</a>)</li>
 <li>create_folder() is deprecated. Please provide the folder name or full path to the argument path directly to chkpt_brms() and a folder to store the checkpoints will be created automatically. This significantly simplifies the workflow.</li>
 <li>create_folder() and the path argument to chkpt_brms()/chkpt_stan() no longer give an error if a folder already exist, allowing a reusable programmatic workflow</li>
 <li>create_folder() and the path argument to chkpt_brms()/chkpt_stan() works with nested folder names, e.g. “output/checkpoints1”, even if output/ does not exist</li>
+<li>a new argument stop_after to chkpt_brms() and chkpt_stan() allows you to predetermine a fixed point to stop the sampling after a certain number of iterations, e.g. stop_after = 1000 will stop the sampling after 1000 iterations. (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/4" class="external-link">original issue </a><a href="https://github.com/venpopov/chkptstanr/issues/4" class="external-link">#4</a>)</li>
 </ul></div>
 <div class="section level4">
 <h4 id="major-bug-fixes-0-1-1">Major bug fixes<a class="anchor" aria-label="anchor" href="#major-bug-fixes-0-1-1"></a></h4>
-<ul><li>Fix major bug ‘“stan_code_path” not found’ when resuming sampling, preventing the core functionality of the package (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/8" class="external-link">issue </a><a href="https://github.com/venpopov/chkptstanr/issues/8" class="external-link">#8</a>]</li>
+<ul><li>Fix major bug ‘“stan_code_path” not found’ when resuming sampling, preventing the core functionality of the package (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/8" class="external-link">original issue </a><a href="https://github.com/venpopov/chkptstanr/issues/8" class="external-link">#8</a>]</li>
 </ul></div>
 <div class="section level4">
 <h4 id="other-changes-0-1-1">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-1-1"></a></h4>
@@ -76,7 +77,7 @@
 <h2 class="page-header" data-toc-text="0.1.1" id="chkptstanr-011-1">chkptstanr 0.1.1<small>2022-04-29</small><a class="anchor" aria-label="anchor" href="#chkptstanr-011-1"></a></h2>
 <div class="section level4">
 <h4 id="bug-fixes-and-minor-improvements-0-1-1">Bug fixes and minor improvements<a class="anchor" aria-label="anchor" href="#bug-fixes-and-minor-improvements-0-1-1"></a></h4>
-<ul><li>Bug fix (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/3" class="external-link">issue </a><a href="https://github.com/venpopov/chkptstanr/issues/3" class="external-link">#3</a>): “model_thread.exe not found on unbuntu/mac”. Added a suggestion to check for the operating system.</li>
+<ul><li>Bug fix (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/3" class="external-link">original issue </a><a href="https://github.com/venpopov/chkptstanr/issues/3" class="external-link">#3</a>): “model_thread.exe not found on unbuntu/mac”. Added a suggestion to check for the operating system.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="chkptstanr-0-1-1">chkptstanr 0.1.0<a class="anchor" aria-label="anchor" href="#chkptstanr-0-1-1"></a></h4>

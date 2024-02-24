@@ -34,7 +34,8 @@ Imports:
   abind,
   methods,
   rstan,
-  Rdpack
+  Rdpack,
+  fs
 Suggests:
     cmdstanr,
     rmarkdown,

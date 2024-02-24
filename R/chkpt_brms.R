@@ -1,77 +1,74 @@
 #' @title Checkpoint Sampling: brms
 #'
-#' @description Fit Bayesian generalized (non-)linear multivariate multilevel models using brms
-#'              with checkpointing.
+#' @description Fit Bayesian generalized (non-)linear multivariate multilevel
+#'   models using brms with checkpointing.
 #'
 #' @param formula An object of class \code{\link[stats]{formula}},
-#'                \code{\link[brms]{brmsformula}}, or \code{\link{brms}{mvbrmsformula}}.
-#'                Further information can be found in  \code{\link[brms]{brmsformula}}.
+#'   \code{\link[brms]{brmsformula}}, or \code{\link{brms}{mvbrmsformula}}.
+#'   Further information can be found in  \code{\link[brms]{brmsformula}}.
 #'
-#' @param data An object of class \code{data.frame} (or one that can be coerced to that class)
-#'             containing data of all variables used in the model.
+#' @param data An object of class \code{data.frame} (or one that can be coerced
+#'   to that class) containing data of all variables used in the model.
 #'
 #' @param iter_warmup (positive integer) The number of warmup iterations to run
-#'                    per chain (defaults to 1000).
+#'   per chain (defaults to 1000).
 #'
 #' @param iter_sampling (positive integer) The number of post-warmup iterations
-#'                      to run per chain (defaults to 1000).
+#'   to run per chain (defaults to 1000).
 #'
 #' @param iter_per_chkpt (positive integer). The number of iterations per
-#'                        checkpoint. Note that \code{iter_sampling} is divided
-#'                        by \code{iter_per_chkpt} to determine the number of
-#'                        checkpoints. This must result in an integer
-#'                        (if not, there will be an error).
+#'   checkpoint. Note that \code{iter_sampling} is divided by
+#'   \code{iter_per_chkpt} to determine the number of checkpoints. This must
+#'   result in an integer (if not, there will be an error).
 #'
 #' @param iter_typical (positive integer) The number of iterations in the
-#'                     initial warmup, which finds the so-called typical set.
-#'                     This is an initial phase, and not included in
-#'                     \code{iter_warmup}. Note that a large enough value
-#'                     is required to ensure convergence (defaults to 150).
+#'   initial warmup, which finds the so-called typical set. This is an initial
+#'   phase, and not included in \code{iter_warmup}. Note that a large enough
+#'   value is required to ensure convergence (defaults to 150).
 #'
 #'
 #' @param parallel_chains (positive integer) The \emph{maximum number} of MCMC
-#'                        chains to run in parallel. If parallel_chains is not
-#'                        specified then the default is to look for the option
-#'                        \code{mc.cores}, which can be set for an entire R session by
-#'                        \code{options(mc.cores=value)}. If the \code{mc.cores}
-#'                        option has not been set then the default is \code{1}.
+#'   chains to run in parallel. If parallel_chains is not specified then the
+#'   default is to look for the option \code{mc.cores}, which can be set for an
+#'   entire R session by \code{options(mc.cores=value)}. If the \code{mc.cores}
+#'   option has not been set then the default is \code{1}.
 #'
-#' @param threads_per (positive integer) Number of threads to use in within-chain
-#'                     parallelization (defaults to \code{1}).
+#' @param threads_per (positive integer) Number of threads to use in
+#'   within-chain parallelization (defaults to \code{1}).
 #'
-#' @param chkpt_progress logical. Should the \code{chkptstanr} progress
-#'                       be printed (defaults to \code{TRUE}) ? If set to
-#'                       \code{FALSE}, the standard \code{cmdstanr} progress
-#'                       bar is printed for each checkpoint
-#'                       (which does not actually keep track of
-#'                       checkpointing progress)
+#' @param chkpt_progress logical. Should the \code{chkptstanr} progress be
+#'   printed (defaults to \code{TRUE}) ? If set to \code{FALSE}, the standard
+#'   \code{cmdstanr} progress bar is printed for each checkpoint (which does not
+#'   actually keep track of checkpointing progress)
 #'
 #' @param control A named list of parameters to control the sampler's behavior.
-#'                It defaults to NULL so all the default values are used.
-#'                For a comprehensive overview see \code{\link[rstan]{stan}}.
+#'   It defaults to NULL so all the default values are used. For a comprehensive
+#'   overview see \code{\link[rstan]{stan}}.
 #'
-#' @param brmsfit Logical. Should a \code{brmsfit} object be returned
-#'                (defaults to \code{TRUE}).
+#' @param brmsfit Logical. Should a \code{brmsfit} object be returned (defaults
+#'   to \code{TRUE}).
 #'
-#' @param seed (positive integer). The seed for random number generation to
-#'             make results reproducible.
+#' @param seed (positive integer). The seed for random number generation to make
+#'   results reproducible.
 #'
-#' @param stop_after (positive integer). The number of checkpoints to sample
-#'                  before stopping. If \code{NULL}, then all checkpoints are
-#'                  sampled (defaults to \code{NULL}). Used only for testing
+#' @param stop_after (positive integer). The number of iterations to sample
+#'   before stopping. If \code{NULL}, then all iterations are sampled (defaults
+#'   to \code{NULL}). Note that sampling will stop at the end of the first
+#'   checkpoint which has an iteration number greater than or equal to
+#'   \code{stop_after}.
 #'
-#' @param path Character string. The path to the folder, that is used for
-#'             saving the checkpoints (see Details). You can provide either a relative path
-#'             to the current working directory or a full path. You no longer
-#'             need to create the folder, as this is done automatically.
+#' @param path Character string. The path to the folder, that is used for saving
+#'   the checkpoints (see Details). You can provide either a relative path to
+#'   the current working directory or a full path. You no longer need to create
+#'   the folder, as this is done automatically.
 #'
 #' @param ... Any additional arguments passed to \code{\link[brms]{brm}},
-#'            including, but not limited to, user-defined prior distributions, the
-#'            \code{\link[brms]{brmsfamily}} (e.g., \code{family = poisson())},
-#'            data2, custom_families, etc.
+#'   including, but not limited to, user-defined prior distributions, the
+#'   \code{\link[brms]{brmsfamily}} (e.g., \code{family = poisson())}, data2,
+#'   custom_families, etc.
 #'
-#' @return An object of class \code{brmsfit} (with \code{brmsfit = TRUE})
-#'         or \code{chkpt_brms} (with \code{brmsfit = FALSE}).
+#' @return An object of class \code{brmsfit} (with \code{brmsfit = TRUE}) or
+#'   \code{chkpt_brms} (with \code{brmsfit = FALSE}).
 #'
 #' @note
 #'
@@ -188,6 +185,13 @@ chkpt_brms <- function(formula,
 
   if (!is.character(path)) {
     stop("path must be a character string giving the foler name or full path of where to store the checkpoints.")
+  }
+  if (!is.null(stop_after)) {
+    if (stop_after > iter_warmup+iter_sampling) {
+      stop_after <- NULL
+    }
+    stop_at_checkpoint <- ceiling(stop_after %/% iter_per_chkpt)
+    message("Sampling will stop after checkpoint ", stop_at_checkpoint)
   }
 
   path <- .use_checkpoint_folder(path)
@@ -314,8 +318,8 @@ chkpt_brms <- function(formula,
   }
 
   for (i in cp_seq) {
-    if (!is.null(stop_after) && i > stop_after) {
-      message("Stopping after ", stop_after, " checkpoints")
+    if (!is.null(stop_after) && i > stop_at_checkpoint) {
+      message("Stopping after ", stop_at_checkpoint, " checkpoints")
       stop_quietly()
     }
 

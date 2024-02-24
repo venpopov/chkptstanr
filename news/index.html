@@ -51,30 +51,34 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.1.1" id="chkptstanr-011">chkptstanr 0.1.1+<small>2022-04-29</small><a class="anchor" aria-label="anchor" href="#chkptstanr-011"></a></h2>
+<h2 class="page-header" data-toc-text="0.1.2" id="chkptstanr-012">chkptstanr 0.1.2<a class="anchor" aria-label="anchor" href="#chkptstanr-012"></a></h2>
 <div class="section level4">
-<h4 id="new-maintainer-0-1-1">New maintainer<a class="anchor" aria-label="anchor" href="#new-maintainer-0-1-1"></a></h4>
+<h4 id="new-maintainer-0-1-2">New maintainer<a class="anchor" aria-label="anchor" href="#new-maintainer-0-1-2"></a></h4>
 <ul><li>With the permission of the original creator, Donald R. Williams, Ven Popov becomes the new maintainer of the package. The development will continue at <a href="https:://github.com/venpopov/chkptstanr">venpopov/chkptstanr</a>.</li>
 </ul></div>
 <div class="section level4">
-<h4 id="new-features-0-1-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-1"></a></h4>
-<ul><li>chkpt_brms() now works with any brm() arguments, including custom families, data2, etc (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/15" class="external-link">original issue </a><a href="https://github.com/venpopov/chkptstanr/issues/15" class="external-link">#15</a>)</li>
-<li>create_folder() is deprecated. Please provide the folder name or full path to the argument path directly to chkpt_brms() and a folder to store the checkpoints will be created automatically. This significantly simplifies the workflow.</li>
-<li>create_folder() and the path argument to chkpt_brms()/chkpt_stan() no longer give an error if a folder already exist, allowing a reusable programmatic workflow</li>
-<li>create_folder() and the path argument to chkpt_brms()/chkpt_stan() works with nested folder names, e.g. “output/checkpoints1”, even if output/ does not exist</li>
-<li>a new argument stop_after to chkpt_brms() and chkpt_stan() allows you to predetermine a fixed point to stop the sampling after a certain number of iterations, e.g. stop_after = 1000 will stop the sampling after 1000 iterations. (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/4" class="external-link">original issue </a><a href="https://github.com/venpopov/chkptstanr/issues/4" class="external-link">#4</a>)</li>
+<h4 id="major-bug-fixes-0-1-2">Major bug fixes<a class="anchor" aria-label="anchor" href="#major-bug-fixes-0-1-2"></a></h4>
+<ul><li>Fix major bug <code>"stan_code_path" not found</code> when resuming sampling, preventing the core functionality of the package (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/8" class="external-link">original issue </a><a href="https://github.com/venpopov/chkptstanr/issues/8" class="external-link">#8</a>]</li>
+<li>
+<code><a href="../reference/chkpt_brms.html">chkpt_brms()</a></code> now works with any <code><a href="https://paul-buerkner.github.io/brms/reference/brm.html" class="external-link">brm()</a></code> arguments, including custom families, data2, etc (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/15" class="external-link">original issue </a><a href="https://github.com/venpopov/chkptstanr/issues/15" class="external-link">#15</a>)</li>
 </ul></div>
 <div class="section level4">
-<h4 id="major-bug-fixes-0-1-1">Major bug fixes<a class="anchor" aria-label="anchor" href="#major-bug-fixes-0-1-1"></a></h4>
-<ul><li>Fix major bug ‘“stan_code_path” not found’ when resuming sampling, preventing the core functionality of the package (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/8" class="external-link">original issue </a><a href="https://github.com/venpopov/chkptstanr/issues/8" class="external-link">#8</a>]</li>
+<h4 id="new-features-0-1-2">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-2"></a></h4>
+<ul><li>a new argument <code>stop_after</code> to <code><a href="../reference/chkpt_brms.html">chkpt_brms()</a></code> and <code><a href="../reference/chkpt_stan.html">chkpt_stan()</a></code> allows you to predetermine a fixed point to stop the sampling after a certain number of iterations, e.g. <code>stop_after = 1000</code> will stop the sampling after 1000 iterations. (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/4" class="external-link">original issue </a><a href="https://github.com/venpopov/chkptstanr/issues/4" class="external-link">#4</a>)</li>
+<li>
+<code><a href="../reference/create_folder.html">create_folder()</a></code> is deprecated. Please provide the folder name or full path to the argument path directly to <code><a href="../reference/chkpt_brms.html">chkpt_brms()</a></code> and a folder to store the checkpoints will be created automatically. This significantly simplifies the workflow.</li>
+<li>
+<code><a href="../reference/create_folder.html">create_folder()</a></code> and the path argument to <code><a href="../reference/chkpt_brms.html">chkpt_brms()</a></code> and <code><a href="../reference/chkpt_stan.html">chkpt_stan()</a></code> no longer give an error if a folder already exist, allowing a reusable programmatic workflow</li>
+<li>
+<code><a href="../reference/create_folder.html">create_folder()</a></code> and the path argument to <code><a href="../reference/chkpt_brms.html">chkpt_brms()</a></code> and <code><a href="../reference/chkpt_stan.html">chkpt_stan()</a></code> works with nested folder names, e.g. <code>"output/checkpoints1"</code>, even if <code>output/</code> does not exist</li>
 </ul></div>
 <div class="section level4">
-<h4 id="other-changes-0-1-1">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-1-1"></a></h4>
+<h4 id="other-changes-0-1-2">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-1-2"></a></h4>
 <ul><li>Set-up initial automated testing and continuous integration with GitHub Actions to ensure the package is always working as expected</li>
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.1.1" id="chkptstanr-011-1">chkptstanr 0.1.1<small>2022-04-29</small><a class="anchor" aria-label="anchor" href="#chkptstanr-011-1"></a></h2>
+<h2 class="page-header" data-toc-text="0.1.1" id="chkptstanr-011">chkptstanr 0.1.1<small>2022-04-29</small><a class="anchor" aria-label="anchor" href="#chkptstanr-011"></a></h2>
 <div class="section level4">
 <h4 id="bug-fixes-and-minor-improvements-0-1-1">Bug fixes and minor improvements<a class="anchor" aria-label="anchor" href="#bug-fixes-and-minor-improvements-0-1-1"></a></h4>
 <ul><li>Bug fix (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/3" class="external-link">original issue </a><a href="https://github.com/venpopov/chkptstanr/issues/3" class="external-link">#3</a>): “model_thread.exe not found on unbuntu/mac”. Added a suggestion to check for the operating system.</li>

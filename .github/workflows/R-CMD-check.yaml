@@ -57,6 +57,7 @@ jobs:
             here
             testthat
             rcmdcheck
+            ape
             stan-dev/cmdstanr
 
       - name: Build Cmdstan

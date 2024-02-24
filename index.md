@@ -51,14 +51,19 @@ including (but not limited to) the following:
 
 
 
-## Installation
+# Installation
 
-You can install the development version of **chkptstanr** like so:
+You can install the CRAN version of **chkptstanr** like so:
 
 ``` r
-install.packages("chkptstanr")
+# install.packages("chkptstanr")
 ```
 
+The CRAN version has several bugs, and until the next release, you can install the development version from GitHub:
+
+```r
+remotes::install_github("venpopov/chkptstanr")
+```
 
 
 ## Packages

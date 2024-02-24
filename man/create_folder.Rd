@@ -2,28 +2,16 @@
 % Please edit documentation in R/create_folder.R
 \name{create_folder}
 \alias{create_folder}
-\title{Create Folder for Checkpointing}
+\title{Create Folder for Checkpointing (Deprecated)}
 \usage{
-create_folder(
-  folder_name = "cp_folder",
-  path = NULL,
-  return_relative = TRUE,
-  warnings = TRUE
-)
+create_folder(folder_name = "cp_folder", path = NULL)
 }
 \arguments{
-\item{folder_name}{Character string. Desired name for the "parent" folder
-(defaults to \code{checkpoint}).}
+\item{folder_name}{Character string. Desired name for the 'parent' folder
+(defaults to \code{cp_folder}).}
 
 \item{path}{Character string, when specified. Defaults to \code{NULL}, which
 then makes the folder in the working directory.}
-
-\item{return_relative}{Logical. When \code{TRUE}, the relative path to the
-current working directory is returned. When \code{FALSE}, the full path is
-returned. Defaults to \code{TRUE}.}
-
-\item{warnings}{Logical. When \code{TRUE}, a warning is given if the folder
-already exists. Defaults to \code{TRUE}.}
 }
 \value{
 the path to the main parent folder containing the four subfolders.
@@ -33,17 +21,8 @@ path to the current working directory is returned. If \code{path} is
 specified or \code{return_relative = FALSE}, the full path is returned.
 }
 \description{
-Create the folder for checkingpointing, which will "house"
-additional folders for the \code{.stan} model, checkpointing information,
-and draws from the posterior distribution.
-}
-\details{
-If the folders already exist, the function will give a warning, but
-still return the path to the main parent folder. It will not overwrite any
-existing files. This is implemented so that the user can re-run a full
-script without getting an error. If you get this warning during the first
-time you run the script, consider carefully if this is the desired folder
-to save the checkpointing files.
+create_folder() is deprected. Provide a path directly in chkpt_brms()',
+or chkpt_stan() instead and a folder will be created automatically.'
 }
 \note{
 This creates a directory with four folders:
@@ -62,32 +41,33 @@ next checkpoint (last iteration from previous checkpoint).
 
 }
 }
+\section{-------------------}{
+Create the folder for checkingpointing, which will 'house'
+additional folders for the \code{.stan} model, checkpointing information,
+and draws from the posterior distribution.
+}
+
 \examples{
 # create initial folder
-path <- create_folder(folder_name = "cp_folder")
+path <- create_folder(folder_name = 'cp_folder')
 path
-unlink("cp_folder", recursive = TRUE) # remove folder
-
-# not-relative return
-path <- create_folder(folder_name = "cp_folder", return_relative = FALSE)
-path#' 
-identical(dir(path), c("cmd_fit", "cp_info", "cp_samples", "stan_model"))
+unlink('cp_folder', recursive = TRUE) # remove folder
 
 # remove folder
-unlink("cp_folder", recursive = TRUE)
+unlink('cp_folder', recursive = TRUE)
 identical(dir(path), character(0))
 
 # repeat - no warning
-path <- create_folder(folder_name = "cp_folder")
+path <- create_folder(folder_name = 'cp_folder')
 
 # repeat - warning, but folders are kept
-path <- create_folder(folder_name = "cp_folder")
-identical(dir(path), c("cmd_fit", "cp_info", "cp_samples", "stan_model"))
+path <- create_folder(folder_name = 'cp_folder')
+identical(dir(path), c('cmd_fit', 'cp_info', 'cp_samples', 'stan_model'))
 
-unlink("cp_folder", recursive = TRUE)
+unlink('cp_folder', recursive = TRUE)
 
 # specify nested folder
-path <- create_folder(folder_name = "nested_folder/cp_folder")
+path <- create_folder(folder_name = 'nested_folder/cp_folder')
 path
-unlink("nested_folder", recursive = TRUE) # remove folder
+unlink('nested_folder', recursive = TRUE) # remove folder
 }

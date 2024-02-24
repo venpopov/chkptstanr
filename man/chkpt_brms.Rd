@@ -80,11 +80,14 @@ before stopping. If \code{NULL}, then all checkpoints are
 sampled (defaults to \code{NULL}). Used only for testing}
 
 \item{path}{Character string. The path to the folder, that is used for
-saving the checkpoints.}
+saving the checkpoints (see Details). You can provide either a relative path
+to the current working directory or a full path. You no longer
+need to create the folder, as this is done automatically.}
 
-\item{...}{Additional arguments based to \code{\link[brms]{make_stancode}},
-including, for example, user-defined prior distributions and the
-\code{\link[brms]{brmsfamily}} (e.g., \code{family = poisson())}.}
+\item{...}{Any additional arguments passed to \code{\link[brms]{brm}},
+including, but not limited to, user-defined prior distributions, the
+\code{\link[brms]{brmsfamily}} (e.g., \code{family = poisson())},
+data2, custom_families, etc.}
 }
 \value{
 An object of class \code{brmsfit} (with \code{brmsfit = TRUE})
@@ -94,47 +97,65 @@ or \code{chkpt_brms} (with \code{brmsfit = FALSE}).
 Fit Bayesian generalized (non-)linear multivariate multilevel models using brms
 with checkpointing.
 }
+\note{
+A folder specified by \code{path} is created with four subfolders:
+
+\itemize{
+
+\item \strong{cmd_fit}: The cmdstanr fittted models (one for each checkpoint).
+
+\item \strong{cp_info}: Mass matrix, step size, and initial values for
+next checkpoint (last iteration from previous checkpoint).
+
+\item \strong{cp_samples}: Samples from the posterior distribution
+(post warmup)
+
+\item \strong{stan_model}: Complied \strong{Stan} model
+
+}
+}
 \examples{
 \dontrun{
 library(brms)
 library(cmdstanr)
 
-# path for storing checkpoint info
-path <- create_folder(folder_name  = "chkpt_folder_fit1")
 
 # "random" intercept
-fit1 <- chkpt_brms(bf(formula = count ~ zAge + zBase * Trt + (1|patient),
-                      family = poisson()), 
-                   data = epilepsy, , 
-                   iter_warmup = 1000, 
-                   iter_sampling = 1000, 
-                   iter_per_chkpt = 250, 
-                   path = path)
-                   
+fit1 <- chkpt_brms(
+  bf(
+    formula = count ~ zAge + zBase * Trt + (1 | patient),
+    family = poisson()
+  ),
+  data = epilepsy, ,
+  iter_warmup = 1000,
+  iter_sampling = 1000,
+  iter_per_chkpt = 250,
+  path = "chkpt_folder_fit1"
+)
+
 # brmsfit output
 fit1
 
-# path for storing checkpoint info
- path <- create_folder(folder_name  = "chkpt_folder_fit2")
 
 # remove "random" intercept (for model comparison)
-fit2 <- chkpt_brms(bf(formula = count ~ zAge + zBase * Trt, 
-                      family = poisson()), 
-                   data = epilepsy, , 
-                   iter_warmup = 1000, 
-                   iter_sampling = 1000, 
-                   iter_per_chkpt = 250, 
-                   path = path)
-                   
+fit2 <- chkpt_brms(
+  bf(
+    formula = count ~ zAge + zBase * Trt,
+    family = poisson()
+  ),
+  data = epilepsy, ,
+  iter_warmup = 1000,
+  iter_sampling = 1000,
+  iter_per_chkpt = 250,
+  path = "chkpt_folder_fit2"
+)
+
 # brmsfit output
 fit2
 
 # compare models
 loo(fit1, fit2)
 
-
-# using custom priors
-path <- create_folder(folder_name = "chkpt_folder_fit3")
 
 # priors
 bprior <- prior(constant(1), class = "b") +
@@ -149,16 +170,14 @@ fit3 <-
       family = poisson()
     ),
     data = epilepsy,
-    path  = path,
+    path = "chkpt_folder_fit3",
     prior = bprior,
     iter_warmup = 1000,
     iter_sampling = 1000,
-    iter_per_chkpt = 250, 
+    iter_per_chkpt = 250,
   )
-
 
 # check priors
 prior_summary(fit3)
-
 }
 }

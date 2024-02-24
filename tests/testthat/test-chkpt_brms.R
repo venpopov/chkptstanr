@@ -1,4 +1,5 @@
 test_that('chkpt_brms picks up after stopping', {
+  skip_on_cran()
   path <- file.path(tempdir(), "chkpt_brms_test")
   # clean up
   on.exit(unlink(path, recursive = TRUE))

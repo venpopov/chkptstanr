@@ -62,11 +62,21 @@ if need be, while not loosing any of the progress.
 \references{
 \insertAllCited{}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/venpopov/chkptstanr}
+  \item \url{https://venpopov.github.io/chkptstanr/}
+  \item Report bugs at \url{https://github.com/venpopov/chkptstanr/issues}
+}
+
+}
 \author{
-\strong{Maintainer}: Donald Williams \email{donald.williams@nwea.org}
+\strong{Maintainer}: Vencislav Popov \email{vencislav.popov@gmail.com} [copyright holder]
 
 Authors:
 \itemize{
+  \item Donald Williams \email{donald.williams@nwea.org}
   \item Tyler Matta \email{tyler.matta@nwea.org}
 }
 

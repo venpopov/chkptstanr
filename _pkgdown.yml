@@ -3,24 +3,24 @@ home:
   links:
   - text: Ask a question about chkptstanr
     href: https://github.com/donaldRwilliams/chkptstanr
+    
+development:
+  mode: auto
 
-url: https://donaldrwilliams.github.io/chkptstanr/
+url: https://venpopov.github.io/chkptstanr/
 template:
   params:
     bootswatch: flatly
   opengraph:
     image:
       src: man/figures/logo.png
-    twitter:
-      creator: "@wdonald_1985"
-      card: summary
 navbar:
   title: "chkptstanr"
   left:
     - text: "Functions"
       href: reference/index.html
-    - text: "Vignettes"
+    - text: "Articles"
       href: articles/index.html
     - text: "News"
       href: news/index.html
-    
+  

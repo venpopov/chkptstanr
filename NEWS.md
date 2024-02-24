@@ -1,21 +1,24 @@
-# chkptstanr (development version)
+# chkptstanr 0.1.1+
 
-## New features
+### New maintainer
 
-* make chkpt_brms() work with any brm() arguments, including custom families, data2, etc
+* With the permission of the original creator, Donald R. Williams, Ven Popov becomes the new maintainer of the package. The development will continue at [venpopov/chkptstanr](https:://github.com/venpopov/chkptstanr). 
 
-## Bug fixes
-* fix bug with not finding stan_code_path
+### New features
 
-# Version 0.1.1
+* chkpt_brms() now works with any brm() arguments, including custom families, data2, etc ([issue #15](https://github.com/donaldRwilliams/chkptstanr/issues/15))
 
-## Bug fixes and minor improvements
+### Bug fixes
+* Fix major bug "stan_code_path" not found when resuming sampling ([issue #8](https://github.com/donaldRwilliams/chkptstanr/issues/8)]
+
+# chkptstanr 0.1.1
+
+### Bug fixes and minor improvements
 
 * Bug fix ([issue #3](https://github.com/donaldRwilliams/chkptstanr/issues/3)):
 "model_thread.exe not found on unbuntu/mac". Added a suggestion to 
 check for the operating system.
 
+### chkptstanr 0.1.0
 
-# Version 0.1.0
-
-## Initial release
+Initial release

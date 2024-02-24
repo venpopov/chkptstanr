@@ -1,7 +1,6 @@
 Package: chkptstanr
 Title: Checkpoint MCMC Sampling with 'Stan'
 Version: 0.1.2
-Date: 2022-04-27
 Authors@R: c(
   person(given = "Vencislav", 
     family = "Popov", 

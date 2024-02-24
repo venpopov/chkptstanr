@@ -16,6 +16,7 @@ chkpt_stan(
   chkpt_progress = TRUE,
   control = NULL,
   seed = 1,
+  stop_after = NULL,
   path,
   ...
 )
@@ -68,8 +69,14 @@ For a comprehensive overview see \code{\link[rstan]{stan}}.}
 \item{seed}{(positive integer). The seed for random number generation to
 make results reproducible.}
 
+\item{stop_after}{(positive integer). The number of checkpoints to sample
+before stopping. If \code{NULL}, then all checkpoints are
+sampled (defaults to \code{NULL}). Used only for testing}
+
 \item{path}{Character string. The path to the folder, that is used for
-saving the checkpoints.}
+saving the checkpoints (see Details). You can provide either a relative path
+to the current working directory or a full path. You no longer
+need to create the folder, as this is done automatically.}
 
 \item{...}{Currently ignored.}
 }
@@ -82,23 +89,30 @@ Fit Bayesian  models using Stan with checkpointing.
 \examples{
 \dontrun{
 
-# path for storing checkpoint info
-path <- create_folder(folder_name = "chkpt_folder_fit1")
-
-stan_code <- make_stancode(bf(formula = count ~ zAge + zBase * Trt + (1|patient),
-                              family = poisson()),
-                           data = epilepsy)
-stan_data <- make_standata(bf(formula = count ~ zAge + zBase * Trt + (1|patient),
-                              family = poisson()),
-                           data = epilepsy)
+stan_code <- make_stancode(
+  bf(
+    formula = count ~ zAge + zBase * Trt + (1 | patient),
+    family = poisson()
+  ),
+  data = epilepsy
+)
+stan_data <- make_standata(
+  bf(
+    formula = count ~ zAge + zBase * Trt + (1 | patient),
+    family = poisson()
+  ),
+  data = epilepsy
+)
 
 # "random" intercept
-fit1 <- chkpt_stan(model_code = stan_code, 
-                   data = stan_data,
-                   iter_warmup = 1000,
-                   iter_sampling = 1000,
-                   iter_per_chkpt = 250,
-                   path = path)
+fit1 <- chkpt_stan(
+  model_code = stan_code,
+  data = stan_data,
+  iter_warmup = 1000,
+  iter_sampling = 1000,
+  iter_per_chkpt = 250,
+  path = "chkpt_folder_fit1"
+)
 
 draws <- combine_chkpt_draws(object = fit1)
 
@@ -106,42 +120,41 @@ posterior::summarise_draws(draws)
 
 
 # eight schools example
- 
-# path for storing checkpoint info
-path <- create_folder(folder_name = "chkpt_folder_fit2")
 
 stan_code <- "
 data {
  int<lower=0> n;
-  real y[n]; 
-  real<lower=0> sigma[n]; 
+  real y[n];
+  real<lower=0> sigma[n];
 }
 parameters {
   real mu;
-  real<lower=0> tau; 
-  vector[n] eta; 
+  real<lower=0> tau;
+  vector[n] eta;
 }
 transformed parameters {
-  vector[n] theta; 
-  theta = mu + tau * eta; 
+  vector[n] theta;
+  theta = mu + tau * eta;
 }
 model {
-  target += normal_lpdf(eta | 0, 1); 
-  target += normal_lpdf(y | theta, sigma);  
+  target += normal_lpdf(eta | 0, 1);
+  target += normal_lpdf(y | theta, sigma);
 }
 "
 stan_data <- schools.data <- list(
   n = 8,
-  y = c(28,  8, -3,  7, -1,  1, 18, 12),
-  sigma = c(15, 10, 16, 11,  9, 11, 10, 18)
+  y = c(28, 8, -3, 7, -1, 1, 18, 12),
+  sigma = c(15, 10, 16, 11, 9, 11, 10, 18)
 )
 
-fit2 <- chkpt_stan(model_code = stan_code, 
-                   data = stan_data,
-                   iter_warmup = 1000,
-                   iter_sampling = 1000,
-                   iter_per_chkpt = 250,
-                   path = path)
+fit2 <- chkpt_stan(
+  model_code = stan_code,
+  data = stan_data,
+  iter_warmup = 1000,
+  iter_sampling = 1000,
+  iter_per_chkpt = 250,
+  path = "chkpt_folder_fit2"
+)
 
 draws <- combine_chkpt_draws(object = fit2)
 

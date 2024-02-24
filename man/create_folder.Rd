@@ -2,27 +2,27 @@
 % Please edit documentation in R/create_folder.R
 \name{create_folder}
 \alias{create_folder}
-\title{Create Folder for Checkpointing}
+\title{Create Folder for Checkpointing (Deprecated)}
 \usage{
 create_folder(folder_name = "cp_folder", path = NULL)
 }
 \arguments{
-\item{folder_name}{Character string. Desired name for the "parent"
-folder (defaults to \code{checkpoint}).}
+\item{folder_name}{Character string. Desired name for the 'parent' folder
+(defaults to \code{cp_folder}).}
 
-\item{path}{Character string, when specified. Defaults to \code{NULL},
-which then makes the folder in the working directory.}
+\item{path}{Character string, when specified. Defaults to \code{NULL}, which
+then makes the folder in the working directory.}
 }
 \value{
-No return value, and instead creates a directory with
-folders that will contain the checkpointing samples and other
-information.
+the path to the main parent folder containing the four subfolders.
+This path should be used as the \code{path} argument in
+\code{\link{chkpt_brms}}. If \code{return_relative = TRUE}, the relative
+path to the current working directory is returned. If \code{path} is
+specified or \code{return_relative = FALSE}, the full path is returned.
 }
 \description{
-Create the folder for checkingpointing, which
-will "house" additional folders for the \code{.stan}
-model, checkpointing information, and draws from the
-posterior distribution.
+create_folder() is deprected. Provide a path directly in chkpt_brms()',
+or chkpt_stan() instead and a folder will be created automatically.'
 }
 \note{
 This creates a directory with four folders:
@@ -41,9 +41,33 @@ next checkpoint (last iteration from previous checkpoint).
 
 }
 }
+\section{-------------------}{
+Create the folder for checkingpointing, which will 'house'
+additional folders for the \code{.stan} model, checkpointing information,
+and draws from the posterior distribution.
+}
+
 \examples{
-path <- create_folder(folder_name = "cp_folder")
+# create initial folder
+path <- create_folder(folder_name = 'cp_folder')
+path
+unlink('cp_folder', recursive = TRUE) # remove folder
 
 # remove folder
-unlink("cp_folder", recursive = TRUE)
+unlink('cp_folder', recursive = TRUE)
+identical(dir(path), character(0))
+
+# repeat - no warning
+path <- create_folder(folder_name = 'cp_folder')
+
+# repeat - warning, but folders are kept
+path <- create_folder(folder_name = 'cp_folder')
+identical(dir(path), c('cmd_fit', 'cp_info', 'cp_samples', 'stan_model'))
+
+unlink('cp_folder', recursive = TRUE)
+
+# specify nested folder
+path <- create_folder(folder_name = 'nested_folder/cp_folder')
+path
+unlink('nested_folder', recursive = TRUE) # remove folder
 }

@@ -9,10 +9,6 @@ on:
     types: [published]
   workflow_dispatch:
 
-concurrency:
-  group: web-${{ github.ref }}
-  cancel-in-progress: true
-
 name: pkgdown
 
 jobs:
@@ -27,8 +23,6 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -41,6 +35,9 @@ jobs:
           dependencies: NA
           needs: website
           extra-packages: |
+            brms
+            rstan
+            Rdpack
             rmarkdown
             knitr
             posterior

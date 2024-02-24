@@ -23,8 +23,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v2
-      - uses: n1hility/cancel-previous-runs@v2
+      - uses: actions/checkout@v4
+      - uses: n1hility/cancel-previous-runs@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 

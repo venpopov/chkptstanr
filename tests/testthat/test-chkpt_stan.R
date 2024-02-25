@@ -1,7 +1,9 @@
+withr::local_options(test_recompile = FALSE,
+                     test_checkpoint_path = "local/chkpt_test_auto_stan")
+
 test_that("chkpt_stan picks up after stopping", {
-  path <- file.path(tempdir(), "chkpt_stan_test1")
-  # clean up
-  on.exit(unlink(path, recursive = TRUE))
+  skip_on_cran()
+  path <- setup_model_testing(dir = 'context2')
 
   # simplified example from vignete for faster execution
   bf_m1 <- brms::bf(
@@ -9,33 +11,32 @@ test_that("chkpt_stan picks up after stopping", {
     family = poisson()
   )
 
-  cat("\n\nRunning for 1 checkpoint then stopping\n\n")
+  cat("\n\nRunning for 2 checkpoints then stop programatically\n\n")
 
   # run for 1 checkpoints then stop
   stancode <- brms::make_stancode(bf_m1, data = brms::epilepsy)
   standata <- brms::make_standata(bf_m1, data = brms::epilepsy)
-  fit_m1 <- try(chkpt_stan(
+  chkpt_stan(
     model_code = stancode,
     data = standata,
-    iter_warmup = 100,
-    iter_sampling = 200,
-    iter_per_chkpt = 100,
-    stop_after = 100,
+    iter_warmup = 400,
+    iter_sampling = 1200,
+    iter_per_chkpt = 200,
+    stop_after = 300,
     path = path
-  ), silent = T)
+  )
 
-  cat("\n\nTrying to pick up where we stopped\n\n")
+  cat("\n\nGet 1 more checkpoints - brmsfit returned even if sampling interupt\n\n")
 
-  res <- try(chkpt_stan(
+  res <- chkpt_stan(
     model_code = stancode,
     data = standata,
-    iter_warmup = 100,
-    iter_sampling = 200,
-    iter_per_chkpt = 100,
+    iter_warmup = 400,
+    iter_sampling = 1200,
+    iter_per_chkpt = 200,
+    stop_after = 600,
     path = path
-  ), silent = T)
-
-  print(res)
+  )
 
   expect_false(is(res, "try-error"))
 })

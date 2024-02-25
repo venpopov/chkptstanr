@@ -90,9 +90,9 @@ chkpt_setup <- function(iter_sampling,
                      total_chkpts)
 
   if (isFALSE(all(check_integer == round(check_integer)))) {
-    stop(paste0("invalid combination\n(tip: dividing",
-                " iter_sampling by iter_per_chkpt must",
-                " produce an integer)"),
+    stop(paste0("Invalid combination of iterations. iter_warmup, ", 
+                "iter_sampling, and iter_warmup + iter_sampling ",
+                "must be all divisible by iter_per_chkpt."),
          call. = FALSE)
   }
 

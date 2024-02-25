@@ -18,6 +18,7 @@ chkpt_brms(
   brmsfit = TRUE,
   seed = 1,
   stop_after = NULL,
+  reset = FALSE,
   path,
   ...
 )
@@ -27,8 +28,8 @@ chkpt_brms(
 \code{\link[brms]{brmsformula}}, or \code{\link{brms}{mvbrmsformula}}.
 Further information can be found in  \code{\link[brms]{brmsformula}}.}
 
-\item{data}{An object of class \code{data.frame} (or one that can be coerced to that class)
-containing data of all variables used in the model.}
+\item{data}{An object of class \code{data.frame} (or one that can be coerced
+to that class) containing data of all variables used in the model.}
 
 \item{iter_warmup}{(positive integer) The number of warmup iterations to run
 per chain (defaults to 1000).}
@@ -37,65 +38,68 @@ per chain (defaults to 1000).}
 to run per chain (defaults to 1000).}
 
 \item{iter_per_chkpt}{(positive integer). The number of iterations per
-checkpoint. Note that \code{iter_sampling} is divided
-by \code{iter_per_chkpt} to determine the number of
-checkpoints. This must result in an integer
-(if not, there will be an error).}
+checkpoint. Note that \code{iter_sampling} is divided by
+\code{iter_per_chkpt} to determine the number of checkpoints. This must
+result in an integer (if not, there will be an error).}
 
 \item{iter_typical}{(positive integer) The number of iterations in the
-initial warmup, which finds the so-called typical set.
-This is an initial phase, and not included in
-\code{iter_warmup}. Note that a large enough value
-is required to ensure convergence (defaults to 150).}
+initial warmup, which finds the so-called typical set. This is an initial
+phase, and not included in \code{iter_warmup}. Note that a large enough
+value is required to ensure convergence (defaults to 150).}
 
 \item{parallel_chains}{(positive integer) The \emph{maximum number} of MCMC
-chains to run in parallel. If parallel_chains is not
-specified then the default is to look for the option
-\code{mc.cores}, which can be set for an entire R session by
-\code{options(mc.cores=value)}. If the \code{mc.cores}
+chains to run in parallel. If parallel_chains is not specified then the
+default is to look for the option \code{mc.cores}, which can be set for an
+entire R session by \code{options(mc.cores=value)}. If the \code{mc.cores}
 option has not been set then the default is \code{1}.}
 
-\item{threads_per}{(positive integer) Number of threads to use in within-chain
-parallelization (defaults to \code{1}).}
+\item{threads_per}{(positive integer) Number of threads to use in
+within-chain parallelization (defaults to \code{1}).}
 
-\item{chkpt_progress}{logical. Should the \code{chkptstanr} progress
-be printed (defaults to \code{TRUE}) ? If set to
-\code{FALSE}, the standard \code{cmdstanr} progress
-bar is printed for each checkpoint
-(which does not actually keep track of
-checkpointing progress)}
+\item{chkpt_progress}{logical. Should the \code{chkptstanr} progress be
+printed (defaults to \code{TRUE}) ? If set to \code{FALSE}, the standard
+\code{cmdstanr} progress bar is printed for each checkpoint (which does not
+actually keep track of checkpointing progress)}
 
 \item{control}{A named list of parameters to control the sampler's behavior.
-It defaults to NULL so all the default values are used.
-For a comprehensive overview see \code{\link[rstan]{stan}}.}
+It defaults to NULL so all the default values are used. For a comprehensive
+overview see \code{\link[rstan]{stan}}.}
 
-\item{brmsfit}{Logical. Should a \code{brmsfit} object be returned
-(defaults to \code{TRUE}).}
+\item{brmsfit}{Logical. Should a \code{brmsfit} object be returned (defaults
+to \code{TRUE}).}
 
-\item{seed}{(positive integer). The seed for random number generation to
-make results reproducible.}
+\item{seed}{(positive integer). The seed for random number generation to make
+results reproducible.}
 
-\item{stop_after}{(positive integer). The number of checkpoints to sample
-before stopping. If \code{NULL}, then all checkpoints are
-sampled (defaults to \code{NULL}). Used only for testing}
+\item{stop_after}{(positive integer). The number of iterations to sample
+before stopping. If \code{NULL}, then all iterations are sampled (defaults
+to \code{NULL}). Note that sampling will stop at the end of the first
+checkpoint which has an iteration number greater than or equal to
+\code{stop_after}.}
 
-\item{path}{Character string. The path to the folder, that is used for
-saving the checkpoints (see Details). You can provide either a relative path
-to the current working directory or a full path. You no longer
-need to create the folder, as this is done automatically.}
+\item{reset}{logical. Should the checkpointing be reset? If \code{TRUE}, then
+the model will begin sampling from the beginning (defaults to
+\code{FALSE}). WARNING: This will remove all previous checkpointing
+information (see \code{\link[=reset_checkpoints]{reset_checkpoints()}}). If the model is unchanged and previously
+compiled, sampling will begin without recompiling the model.}
+
+\item{path}{Character string. The path to the folder, that is used for saving
+the checkpoints (see Details). You can provide either a relative path to
+the current working directory or a full path. You no longer need to create
+the folder, as this is done automatically.}
 
 \item{...}{Any additional arguments passed to \code{\link[brms]{brm}},
 including, but not limited to, user-defined prior distributions, the
-\code{\link[brms]{brmsfamily}} (e.g., \code{family = poisson())},
-data2, custom_families, etc.}
+\code{\link[brms]{brmsfamily}} (e.g., \code{family = poisson())}, data2,
+custom_families, etc.}
 }
 \value{
-An object of class \code{brmsfit} (with \code{brmsfit = TRUE})
-or \code{chkpt_brms} (with \code{brmsfit = FALSE}).
+An object of class \code{brmsfit} (with \code{brmsfit = TRUE}) or
+\code{chkpt_brms} (with \code{brmsfit = FALSE}).
 }
 \description{
-Fit Bayesian generalized (non-)linear multivariate multilevel models using brms
-with checkpointing.
+Fit Bayesian generalized (non-)linear multivariate multilevel
+models using brms with checkpointing.
 }
 \note{
 A folder specified by \code{path} is created with four subfolders:

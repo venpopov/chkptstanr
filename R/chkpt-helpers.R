@@ -7,6 +7,43 @@ file_path2 <- function(...) {
   do.call(file.path, dots)
 }
 
+#' @title Delete Checkpoint Folders containing samples, keep the model
+#' @description Deletes all checkpoint files and folders under path except for
+#'   stan_model/model.stan and stan_model/model.exe. This allows you to restart 
+#'   the sampling from 0 without recompiling the model.
+#' @param path (character) The path to the checkpoint folder.
+#' @param reset (logical) If TRUE, the checkpoint folders are deleted. If FALSE,
+#'  nothing is done.
+#' @return NULL
+#' @export
+reset_checkpoints <- function(path, reset=TRUE) {
+  if (reset) {
+    to_remove <- file_path2(path, c("cmd_fit", "cp_info", "cp_samples"))
+    unlink(to_remove, recursive = TRUE)
+  }
+  return(invisible(reset))
+}
+
+# utility function for setting testing options
+# defaults are to reset the checkpoints but keep the model to avoid recompiling
+# and reset checkpoints at the end of the test
+setup_model_testing <- function(dir = NULL, 
+                                recompile = getOption('test_recompile', FALSE),
+                                path = getOption('test_checkpoint_path', tempdir())) {
+  wdir <- getwd()
+  setwd(here::here())
+  withr::defer_parent(setwd(wdir))
+  path = file_path2(path, dir)
+  if (recompile) {
+    unlink(path, recursive = TRUE)
+  } else {
+    reset_checkpoints(path)
+  }
+  withr::defer_parent(reset_checkpoints(path))
+  return(path)
+}
+
+
 rstring <- function(n = 10, char_set = c(letters, LETTERS, 0:9), seed = NULL) {
   if (is.null(seed)) {
     seed <- sample.int(.Machine$integer.max, 1L)

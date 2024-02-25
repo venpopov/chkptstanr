@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chkptstanr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
       </span>
     </div>
 
@@ -69,6 +69,7 @@
 <span>  control <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  stop_after <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  reset <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">path</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -81,8 +82,8 @@
 
 
 <dt>data</dt>
-<dd><p>A named list of R objects (like for RStan).
-Further details can be found in <code><a href="https://mc-stan.org/cmdstanr/reference/model-method-sample.html" class="external-link">sample</a></code>.</p></dd>
+<dd><p>A named list of R objects (like for RStan). Further details can
+be found in <code><a href="https://mc-stan.org/cmdstanr/reference/model-method-sample.html" class="external-link">sample</a></code>.</p></dd>
 
 
 <dt>iter_warmup</dt>
@@ -97,65 +98,70 @@ to run per chain (defaults to 1000).</p></dd>
 
 <dt>iter_per_chkpt</dt>
 <dd><p>(positive integer). The number of iterations per
-checkpoint. Note that <code>iter_sampling</code> is divided
-by <code>iter_per_chkpt</code> to determine the number of
-checkpoints. This must result in an integer
-(if not, there will be an error).</p></dd>
+checkpoint. Note that <code>iter_sampling</code> is divided by
+<code>iter_per_chkpt</code> to determine the number of checkpoints. This must
+result in an integer (if not, there will be an error).</p></dd>
 
 
 <dt>iter_typical</dt>
 <dd><p>(positive integer) The number of iterations in the
-initial warmup, which finds the so-called typical set.
-This is an initial phase, and not included in
-<code>iter_warmup</code>. Note that a large enough value
-is required to ensure converge (defaults to 150).</p></dd>
+initial warmup, which finds the so-called typical set. This is an initial
+phase, and not included in <code>iter_warmup</code>. Note that a large enough
+value is required to ensure converge (defaults to 150).</p></dd>
 
 
 <dt>parallel_chains</dt>
 <dd><p>(positive integer) The <em>maximum number</em> of MCMC
-chains to run in parallel. If parallel_chains is not
-specified then the default is to look for the option
-<code>mc.cores</code>, which can be set for an entire R session by
-<code>options(mc.cores=value)</code>. If the <code>mc.cores</code>
+chains to run in parallel. If parallel_chains is not specified then the
+default is to look for the option <code>mc.cores</code>, which can be set for an
+entire R session by <code>options(mc.cores=value)</code>. If the <code>mc.cores</code>
 option has not been set then the default is <code>1</code>.</p></dd>
 
 
 <dt>threads_per</dt>
-<dd><p>(positive integer) Number of threads to use in within-chain
-parallelization (defaults to <code>1</code>).</p></dd>
+<dd><p>(positive integer) Number of threads to use in
+within-chain parallelization (defaults to <code>1</code>).</p></dd>
 
 
 <dt>chkpt_progress</dt>
-<dd><p>logical. Should the <code>chkptstanr</code> progress
-be printed (defaults to <code>TRUE</code>) ? If set to
-<code>FALSE</code>, the standard <code>cmdstanr</code> progress
-bar is printed for each checkpoint
-(which does not actually keep track of
-checkpointing progress)</p></dd>
+<dd><p>logical. Should the <code>chkptstanr</code> progress be
+printed (defaults to <code>TRUE</code>) ? If set to <code>FALSE</code>, the standard
+<code>cmdstanr</code> progress bar is printed for each checkpoint (which does not
+actually keep track of checkpointing progress)</p></dd>
 
 
 <dt>control</dt>
 <dd><p>A named list of parameters to control the sampler's behavior.
-It defaults to NULL so all the default values are used.
-For a comprehensive overview see <code><a href="https://mc-stan.org/rstan/reference/stan.html" class="external-link">stan</a></code>.</p></dd>
+It defaults to NULL so all the default values are used. For a comprehensive
+overview see <code><a href="https://mc-stan.org/rstan/reference/stan.html" class="external-link">stan</a></code>.</p></dd>
 
 
 <dt>seed</dt>
-<dd><p>(positive integer). The seed for random number generation to
-make results reproducible.</p></dd>
+<dd><p>(positive integer). The seed for random number generation to make
+results reproducible.</p></dd>
 
 
 <dt>stop_after</dt>
-<dd><p>(positive integer). The number of checkpoints to sample
-before stopping. If <code>NULL</code>, then all checkpoints are
-sampled (defaults to <code>NULL</code>). Used only for testing</p></dd>
+<dd><p>(positive integer). The number of iterations to sample
+before stopping. If <code>NULL</code>, then all iterations are sampled (defaults
+to <code>NULL</code>). Note that sampling will stop at the end of the first
+checkpoint which has an iteration number greater than or equal to
+<code>stop_after</code>.</p></dd>
+
+
+<dt>reset</dt>
+<dd><p>logical. Should the checkpointing be reset? If <code>TRUE</code>, then
+the model will begin sampling from the beginning (defaults to
+<code>FALSE</code>). WARNING: This will remove all previous checkpointing
+information (see <code><a href="reset_checkpoints.html">reset_checkpoints()</a></code>). If the model is unchanged and previously
+compiled, sampling will begin without recompiling the model.</p></dd>
 
 
 <dt>path</dt>
-<dd><p>Character string. The path to the folder, that is used for
-saving the checkpoints (see Details). You can provide either a relative path
-to the current working directory or a full path. You no longer
-need to create the folder, as this is done automatically.</p></dd>
+<dd><p>Character string. The path to the folder, that is used for saving
+the checkpoints (see Details). You can provide either a relative path to
+the current working directory or a full path. You no longer need to create
+the folder, as this is done automatically.</p></dd>
 
 
 <dt>...</dt>

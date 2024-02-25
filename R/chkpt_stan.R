@@ -55,6 +55,12 @@
 #'   the checkpoints (see Details). You can provide either a relative path to
 #'   the current working directory or a full path. You no longer need to create
 #'   the folder, as this is done automatically.
+#'   
+#' @param reset logical. Should the checkpointing be reset? If \code{TRUE}, then
+#'   the model will begin sampling from the beginning (defaults to
+#'   \code{FALSE}). WARNING: This will remove all previous checkpointing
+#'   information (see [reset_checkpoints()]). If the model is unchanged and previously
+#'   compiled, sampling will begin without recompiling the model.
 #'
 #' @param ... Currently ignored.
 #'
@@ -148,8 +154,10 @@ chkpt_stan <- function(model_code,
                        control = NULL,
                        seed = 1,
                        stop_after = NULL,
+                       reset = FALSE,
                        path, ...) {
   args <- c(as.list(environment()), list(...))
+  reset_checkpoints(path, isTRUE(reset))
 
   if (!requireNamespace("cmdstanr", quietly = TRUE)) {
     stop("Please install the '", "cmdstanr", "' package.")
@@ -161,10 +169,10 @@ chkpt_stan <- function(model_code,
     stop("data must be a list. See examples.")
   }
   if (!is.null(stop_after)) {
-    if (stop_after > iter_warmup+iter_sampling) {
+    if (stop_after > iter_warmup + iter_sampling) {
       stop_after <- NULL
     }
-    stop_at_checkpoint <- ceiling(stop_after %/% iter_per_chkpt)
+    stop_at_checkpoint <- ceiling(stop_after / iter_per_chkpt)
     message("Sampling will stop after checkpoint ", stop_at_checkpoint)
   }
 
@@ -180,6 +188,7 @@ chkpt_stan <- function(model_code,
     )
   }
 
+  # TODO: THIS NEEDS A FIX
   model_threads_name <- ifelse(.Platform$OS.type == "unix",
     "model",
     "model_threads.exe"
@@ -192,8 +201,8 @@ chkpt_stan <- function(model_code,
     )
 
     saveRDS(stan_m3, file = paste0(path, "/stan_model/comp.rds"))
-
     saveRDS(args, paste0(path, "/stan_model/args.rds"))
+    
   } else {
     initial_args <- readRDS(paste0(path, "/stan_model/args.rds"))
 
@@ -262,10 +271,12 @@ chkpt_stan <- function(model_code,
 
   for (i in cp_seq) {
     if (!is.null(stop_after) && i > stop_at_checkpoint) {
-      message("\nStopping after ", stop_at_checkpoint, " checkpoints")
-      stop_quietly()
+      message("Stopping after ", stop_at_checkpoint, " checkpoints")
+      returned_object <- list(args = args)
+      class(returned_object) <- "chkpt_stan"
+      return(returned_object)
     }
-    
+
     if (i <= warmup_chkpts) {
       stan_phase <- "warmup"
 

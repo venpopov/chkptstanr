@@ -9,6 +9,6 @@
 ^NEWS.md$
 ^doc$
 ^Meta$
-^tests/local$
 ^.github$
 ^local$
+^tests/testthat/local-.*$

@@ -62,6 +62,12 @@
 #'   the current working directory or a full path. You no longer need to create
 #'   the folder, as this is done automatically.
 #'
+#' @param reset logical. Should the checkpointing be reset? If \code{TRUE}, then
+#'   the model will begin sampling from the beginning (defaults to
+#'   \code{FALSE}). WARNING: This will remove all previous checkpointing
+#'   information (see [reset_checkpoints()]). If the model is unchanged and previously
+#'   compiled, sampling will begin without recompiling the model.
+#'
 #' @param ... Any additional arguments passed to \code{\link[brms]{brm}},
 #'   including, but not limited to, user-defined prior distributions, the
 #'   \code{\link[brms]{brmsfamily}} (e.g., \code{family = poisson())}, data2,
@@ -172,9 +178,24 @@ chkpt_brms <- function(formula,
                        brmsfit = TRUE,
                        seed = 1,
                        stop_after = NULL,
+                       reset = FALSE,
                        path, ...) {
+  
+  # TODO: MASSIVElY SIMPLIFY AND REFACTOR ALL CODE BELOW AFTER THE HOTFIX IS OUT
   args <- c(as.list(environment()), list(...))
-
+  
+  withr::defer({
+    if (stan_phase %in% c("sample","complete")) {
+      if (is.null(returnValue())) {
+        return(return_object(brmsfit = brmsfit, formula = formula, data = data, path = path, ...))
+      }
+    } else {
+      message("\nInterupted during warmup. No samples available.")
+    }
+  })
+  
+  reset_checkpoints(path, isTRUE(reset))
+  
   if (!requireNamespace("cmdstanr", quietly = TRUE)) {
     stop("Please install the '", "cmdstanr", "' package.")
   }
@@ -186,17 +207,20 @@ chkpt_brms <- function(formula,
   if (!is.character(path)) {
     stop("path must be a character string giving the foler name or full path of where to store the checkpoints.")
   }
+  
   if (!is.null(stop_after)) {
     if (stop_after > iter_warmup+iter_sampling) {
       stop_after <- NULL
     }
-    stop_at_checkpoint <- ceiling(stop_after %/% iter_per_chkpt)
+    stop_at_checkpoint <- ceiling(stop_after / iter_per_chkpt)
     message("Sampling will stop after checkpoint ", stop_at_checkpoint)
   }
 
   path <- .use_checkpoint_folder(path)
   stan_code_path <- paste0(path, "/stan_model/model.stan")
 
+  
+  # TODO: DON"T REMAKE STAN CODE AND DATA IF EXECUTABLE EXISTS
   if (threads_per == 1) {
     stan_data <- brms::make_standata(formula = formula, data = data, ...)
     stan_code <- brms::make_stancode(formula = formula, data = data, ...)
@@ -225,6 +249,7 @@ chkpt_brms <- function(formula,
     )
   }
 
+  # TODO: THIS NEEDS A FIX
   model_threads_name <- ifelse(.Platform$OS.type == "unix",
     "model_threads",
     "model_threads.exe"
@@ -298,29 +323,19 @@ chkpt_brms <- function(formula,
 
   if (last_chkpt == total_chkpts) {
     message("Checkpointing complete")
-
-
-    if (brmsfit) {
-      returned_object <- make_brmsfit(
-        formula = formula,
-        data = data,
-        path = path,
-        ...
-      )
-    } else {
-      returned_object <- list(args = args)
-      class(returned_object) <- "chkpt_brms"
-    }
-
-    return(returned_object)
-  } else {
+    return(return_object(brmsfit = brmsfit, formula = formula, data = data, path = path, ...))
+  } else {  # TODO: remove unnecessary else clause
     cp_seq <- seq(last_chkpt + 1, total_chkpts)
   }
 
   for (i in cp_seq) {
     if (!is.null(stop_after) && i > stop_at_checkpoint) {
       message("Stopping after ", stop_at_checkpoint, " checkpoints")
-      stop_quietly()
+      if (i > warmup_chkpts + 1) {
+        return(return_object(brmsfit = brmsfit, formula = formula, data = data, path = path, ...))
+      }
+      stan_phase = "warmup"
+      return(invisible(NULL))
     }
 
     if (i <= warmup_chkpts) {
@@ -359,7 +374,7 @@ chkpt_brms <- function(formula,
         "samples_", i, ".rds"
       ))
 
-      # this is optional
+      # TODO: THIS CAN BE OPTIMIZED BY DOING ONLY ONCE AT THE END
       if (brmsfit) {
         saveRDS(
           object = rstan::read_stan_csv(sample_chunk$output_files()),
@@ -379,24 +394,28 @@ chkpt_brms <- function(formula,
 
     if (i == total_chkpts) {
       message("Checkpointing complete")
+      stan_phase = "complete"
+      return(return_object(brmsfit = brmsfit, formula = formula, data = data, path = path, ...))
     }
   }
-
-  if (brmsfit) {
-    returned_object <- make_brmsfit(
-      formula = formula,
-      data = data,
-      path = path,
-      ...
-    )
-  } else {
-    returned_object <- list(args = args)
-    class(returned_object) <- "chkpt_brms"
-  }
-
-  returned_object$path <- path
-  return(returned_object)
 }
+
+
+return_object <- function(brmsfit, ...) {
+  dots <- list(...)
+  args <- dots$args
+  dots$args <- NULL
+  if (brmsfit) {
+    out <- brms::do_call(make_brmsfit, dots)
+  } else {
+    out <- list(args = args)
+    class(out) <- "chkpt_brms"
+  }
+  out$path <- dots$path
+  out  
+}
+
+
 
 
 #' @title Print \code{chkpt_brms} Objects

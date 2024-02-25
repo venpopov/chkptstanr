@@ -129,4 +129,3 @@ test_that("chkpt_brms refuses to continue sampling if we change key arguments", 
     iter_sampling = 200,
     iter_per_chkpt = 100,
   ), "arguments have been changed")
-})

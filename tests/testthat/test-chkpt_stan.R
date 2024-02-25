@@ -45,27 +45,26 @@ test_that("refuses to continue sampling if we change key arguments", {
   path <- file.path(tempdir(), "chkpt_stan_test1")
   # clean up
   on.exit(unlink(path, recursive = TRUE))
-  
+
   # simplified example from vignete for faster execution
   bf_m1 <- brms::bf(
     formula = count ~ zAge + zBase,
     family = poisson()
   )
-  
-  cat("\n\nRunning for 1 checkpoint then stopping\n\n")
-  
+
+  cat("\n\nRunning for 2 checkpoints then stop programatically\n\n")
+
   # run for 1 checkpoints then stop
   stancode <- brms::make_stancode(bf_m1, data = brms::epilepsy)
   standata <- brms::make_standata(bf_m1, data = brms::epilepsy)
-  fit_m1 <- try(chkpt_stan(
+  chkpt_stan(
     model_code = stancode,
     data = standata,
-    iter_warmup = 100,
-    iter_sampling = 200,
-    iter_per_chkpt = 100,
-    stop_after = 100,
-    path = path
-  ), silent = T)
+    iter_warmup = 400,
+    iter_sampling = 1200,
+    iter_per_chkpt = 200,
+    stop_after = 300,
+    path = path)
   
   cat("\n\nTrying to pick up where we stopped\n\n")
   
@@ -73,9 +72,10 @@ test_that("refuses to continue sampling if we change key arguments", {
   expect_error(chkpt_stan(
     model_code = stancode,
     data = standata,
-    iter_warmup = 100,
-    iter_sampling = 200,
-    iter_per_chkpt = 100,
+    iter_warmup = 400,
+    iter_sampling = 1200,
+    iter_per_chkpt = 200,
+    stop_after = 600,
     path = path
   ), "arguments have been changed")
 })

@@ -162,9 +162,6 @@ chkpt_stan <- function(model_code,
   if (!requireNamespace("cmdstanr", quietly = TRUE)) {
     stop("Please install the '", "cmdstanr", "' package.")
   }
-  if (!(is.character(path))) {
-    stop("path must be a character string giving the folder name or full path of where to store the checkpoints.")
-  }
   if (!inherits(data, "list")) {
     stop("data must be a list. See examples.")
   }

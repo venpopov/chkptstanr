@@ -179,37 +179,35 @@ chkpt_brms <- function(formula,
                        seed = 1,
                        stop_after = NULL,
                        reset = FALSE,
-                       path, ...) {
-  
+                       path,
+                       ...) {
   # TODO: MASSIVElY SIMPLIFY AND REFACTOR ALL CODE BELOW AFTER THE HOTFIX IS OUT
   args <- c(as.list(environment()), list(...))
-  
+
   withr::defer({
-    if (stan_phase %in% c("sample","complete")) {
+    if (stan_phase %in% c("sample", "complete")) {
       if (is.null(returnValue())) {
-        return(return_object(brmsfit = brmsfit, formula = formula, data = data, path = path, ...))
+        return(return_object(
+          brmsfit = brmsfit,
+          formula = formula,
+          data = data,
+          path = path,
+          ...
+        ))
       }
     } else {
       message("\nInterupted during warmup. No samples available.")
     }
   })
-  
+
   reset_checkpoints(path, isTRUE(reset))
-  
+
   if (!requireNamespace("cmdstanr", quietly = TRUE)) {
     stop("Please install the '", "cmdstanr", "' package.")
   }
 
-  if (!is(formula, "formula") && !is(formula, "brmsformula")) {
-    stop("formula must be of class formula or brmsformula")
-  }
-
-  if (!is.character(path)) {
-    stop("path must be a character string giving the foler name or full path of where to store the checkpoints.")
-  }
-  
   if (!is.null(stop_after)) {
-    if (stop_after > iter_warmup+iter_sampling) {
+    if (stop_after > iter_warmup + iter_sampling) {
       stop_after <- NULL
     }
     stop_at_checkpoint <- ceiling(stop_after / iter_per_chkpt)
@@ -219,11 +217,13 @@ chkpt_brms <- function(formula,
   path <- .use_checkpoint_folder(path)
   stan_code_path <- paste0(path, "/stan_model/model.stan")
 
-  
+
   # TODO: DON"T REMAKE STAN CODE AND DATA IF EXECUTABLE EXISTS
   if (threads_per == 1) {
-    stan_data <- brms::make_standata(formula = formula, data = data, ...)
-    stan_code <- brms::make_stancode(formula = formula, data = data, ...)
+    stan_data <-
+      brms::make_standata(formula = formula, data = data, ...)
+    stan_code <-
+      brms::make_stancode(formula = formula, data = data, ...)
   } else {
     stan_data <- brms::make_standata(
       formula = formula,
@@ -311,7 +311,8 @@ chkpt_brms <- function(formula,
   } else {
     cp_fn_list <- list.files(paste0(path, "/cp_info"))
 
-    checkpoints <- as.numeric(gsub(".*info_(.+).rds.*", "\\1", cp_fn_list))
+    checkpoints <-
+      as.numeric(gsub(".*info_(.+).rds.*", "\\1", cp_fn_list))
 
     last_chkpt <- max(checkpoints)
 
@@ -323,8 +324,15 @@ chkpt_brms <- function(formula,
 
   if (last_chkpt == total_chkpts) {
     message("Checkpointing complete")
-    return(return_object(brmsfit = brmsfit, formula = formula, data = data, path = path, ...))
-  } else {  # TODO: remove unnecessary else clause
+    return(return_object(
+      brmsfit = brmsfit,
+      formula = formula,
+      data = data,
+      path = path,
+      ...
+    ))
+  } else {
+    # TODO: remove unnecessary else clause
     cp_seq <- seq(last_chkpt + 1, total_chkpts)
   }
 
@@ -332,9 +340,15 @@ chkpt_brms <- function(formula,
     if (!is.null(stop_after) && i > stop_at_checkpoint) {
       message("Stopping after ", stop_at_checkpoint, " checkpoints")
       if (i > warmup_chkpts + 1) {
-        return(return_object(brmsfit = brmsfit, formula = formula, data = data, path = path, ...))
+        return(return_object(
+          brmsfit = brmsfit,
+          formula = formula,
+          data = data,
+          path = path,
+          ...
+        ))
       }
-      stan_phase = "warmup"
+      stan_phase <- "warmup"
       return(invisible(NULL))
     }
 
@@ -394,8 +408,14 @@ chkpt_brms <- function(formula,
 
     if (i == total_chkpts) {
       message("Checkpointing complete")
-      stan_phase = "complete"
-      return(return_object(brmsfit = brmsfit, formula = formula, data = data, path = path, ...))
+      stan_phase <- "complete"
+      return(return_object(
+        brmsfit = brmsfit,
+        formula = formula,
+        data = data,
+        path = path,
+        ...
+      ))
     }
   }
 }
@@ -412,7 +432,7 @@ return_object <- function(brmsfit, ...) {
     class(out) <- "chkpt_brms"
   }
   out$path <- dots$path
-  out  
+  out
 }
 
 

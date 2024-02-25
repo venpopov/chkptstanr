@@ -1,8 +1,10 @@
-test_that("chkpt_brms picks up after stopping", {
+withr::local_options(test_recompile = FALSE,
+                     test_checkpoint_path = "local/chkpt_test_auto_brms")
+
+
+test_that("chkpt_brms picks up after stopping and returns intermediatery results", {
   skip_on_cran()
-  path <- file.path(tempdir(), "chkpt_brms_test")
-  # clean up
-  on.exit(unlink(path, recursive = TRUE))
+  path <- setup_model_testing(dir = 'context1')
 
   # simplified example from vignete for faster execution
   bf_m1 <- brms::bf(
@@ -10,35 +12,51 @@ test_that("chkpt_brms picks up after stopping", {
     family = poisson()
   )
 
-  cat("\n\nRunning for 1 checkpoint then stopping\n\n")
+  cat("\n\nRunning for 2 checkpoints then stop programatically\n\n")
 
   # run for 1 checkpoints then stop
-  fit_m1 <- try(chkpt_brms(
+  expect_message(chkpt_brms(
     formula = bf_m1,
     data = brms::epilepsy,
-    iter_warmup = 100,
-    iter_sampling = 200,
-    iter_per_chkpt = 100,
-    stop_after = 100,
-    path = path
-  ), silent = T)
+    iter_warmup = 400,
+    iter_sampling = 1200,
+    iter_per_chkpt = 200,
+    stop_after = 300,
+    path = path,
+  ), "Interupted during warmup. No samples available.")
 
-  cat("\n\nTrying to pick up where we stopped\n\n")
+  cat("\n\nGet 1 more checkpoints - brmsfit returned even if sampling interupt\n\n")
 
-  res <- try(chkpt_brms(
+  fit2 <- chkpt_brms(
     formula = bf_m1,
     data = brms::epilepsy,
     path = path,
-    iter_warmup = 100,
-    iter_sampling = 200,
-    iter_per_chkpt = 100,
-  ), silent = T)
-
-  expect_false(is(res, "try-error"))
+    iter_warmup = 400,
+    iter_sampling = 1200,
+    iter_per_chkpt = 200,
+    stop_after = 600
+  )
+  
+  expect_true(is(fit2, "brmsfit"))
+  
+  cat("\n\nFinish sampling\n\n")
+  
+  fit3 <- chkpt_brms(
+    formula = bf_m1,
+    data = brms::epilepsy,
+    path = path,
+    iter_warmup = 400,
+    iter_sampling = 1200,
+    iter_per_chkpt = 200,
+  )
+  
+  expect_true(is(fit3, "brmsfit"))
 })
 
 
 test_that("chkpt_brms works with data2", {
+  skip_on_cran()
+  path <- setup_model_testing(dir = 'context2')
   # generate data
   # from: https://cran.r-project.org/web/packages/brms/vignettes/brms_phylogenetics.html
   phylo <- ape::read.nexus("https://paul-buerkner.github.io/data/phylo.nex")
@@ -72,6 +90,7 @@ test_that("chkpt_brms works with data2", {
   ), silent = T)
 
   expect_false(is(checkpoint_model, "try-error"))
+  expect_true(is(checkpoint_model, "brmsfit"))
 })
 
 

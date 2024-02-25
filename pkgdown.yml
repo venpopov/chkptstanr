@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   chkpt_brms: chkpt_brms.html
   chkpt_stan: chkpt_stan.html
-last_built: 2024-02-25T09:04Z
+last_built: 2024-02-25T09:11Z
 urls:
   reference: https://venpopov.github.io/chkptstanr/reference
   article: https://venpopov.github.io/chkptstanr/articles

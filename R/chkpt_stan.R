@@ -175,45 +175,36 @@ chkpt_stan <- function(model_code,
 
   stan_data <- data
   path <- .use_checkpoint_folder(path)
-  stan_code_path <- paste0(path, "/stan_model/model.stan")
 
-  if (!(check_for_model("model.stan", path))) {
-    stan_code_path <- cmdstanr::write_stan_file(
-      code = model_code,
-      dir = paste0(path, "/stan_model"),
-      basename = "model"
-    )
-  }
-
-  # TODO: THIS NEEDS A FIX
-  model_threads_name <- ifelse(.Platform$OS.type == "unix",
-    "model",
-    "model_threads.exe"
+  stan_code_path <- cmdstanr::write_stan_file(
+    code = model_code,
+    dir = paste0(path, "/stan_model"),
+    basename = "model"
   )
 
-  if (isFALSE(check_for_model(eval(model_threads_name), path))) {
-    stan_m3 <- cmdstanr::cmdstan_model(
-      stan_file = stan_code_path,
-      cpp_options = list(stan_threads = TRUE)
-    )
-
-    saveRDS(stan_m3, file = paste0(path, "/stan_model/comp.rds"))
-    saveRDS(args, paste0(path, "/stan_model/args.rds"))
-    
-  } else {
+  # TODO: THIS NEEDS A BETTER FIX, FOR NOW, QUICK PATCH
+  args_exist <- file.exists(paste0(path, "/stan_model/args.rds"))
+  if (args_exist) {
     initial_args <- readRDS(paste0(path, "/stan_model/args.rds"))
-
-    if (isFALSE(check_restart(args, initial_args))) {
-      stop("invalid restart (arguments have been changed)",
-        call. = FALSE
-      )
+    exclude_args <- c('stop_after')
+    diffs = waldo::compare(args[!names(args) %in% exclude_args], 
+                           initial_args[!names(initial_args) %in% exclude_args],
+                           ignore_function_env = TRUE,
+                           ignore_formula_env = TRUE)
+    
+    if (length(diffs) > 0) {
+      stop("Important arguments have been changed. Please reset the checkpointing via reset_checkpoints().", 
+           call. = FALSE)
     }
-
-    stan_m3 <- readRDS(paste0(path, "/stan_model/comp.rds"))
-
-    message("Sampling next checkpoint")
+  } else {
+    saveRDS(args, paste0(path, "/stan_model/args.rds"))
   }
 
+  stan_m3 <- cmdstanr::cmdstan_model(
+    stan_file = stan_code_path,
+    cpp_options = list(stan_threads = TRUE)
+  )
+  
   # checkpoint test
   chkpt_set_up <- chkpt_setup(
     iter_warmup = iter_warmup,

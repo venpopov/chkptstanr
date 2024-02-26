@@ -42,9 +42,8 @@ test_that("chkpt_stan picks up after stopping", {
 })
 
 test_that("refuses to continue sampling if we change key arguments", {
-  path <- file.path(tempdir(), "chkpt_stan_test1")
-  # clean up
-  on.exit(unlink(path, recursive = TRUE))
+  skip_on_cran()
+  path <- setup_model_testing(dir = 'context3')
   
   # simplified example from vignete for faster execution
   bf_m1 <- brms::bf(

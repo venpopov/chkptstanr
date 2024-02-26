@@ -197,7 +197,7 @@ chkpt_brms <- function(formula,
         ))
       }
     } else {
-      message("\nInterupted during warmup. No samples available.")
+      message("\nInterupted before or during warmup. No samples available.")
     }
   })
 
@@ -216,7 +216,6 @@ chkpt_brms <- function(formula,
   }
 
   path <- .use_checkpoint_folder(path)
-  stan_code_path <- paste0(path, "/stan_model/model.stan")
 
 
   # TODO: DON"T REMAKE STAN CODE AND DATA IF EXECUTABLE EXISTS
@@ -240,41 +239,33 @@ chkpt_brms <- function(formula,
     )
   }
 
-
-
-  if (isFALSE(check_for_model("model.stan", path))) {
-    stan_code_path <- cmdstanr::write_stan_file(
-      code = stan_code,
-      dir = paste0(path, "/stan_model"),
-      basename = "model"
-    )
-  }
-
-  # TODO: THIS NEEDS A BETTER FIX, FOR NOW, QUICK PATCH
-  # model_threads_name <- ifelse(.Platform$OS.type == "unix",
-  #   "model_threads",
-  #   "model_threads.exe"
-  # )
-  
-  stan_m3 <- cmdstanr::cmdstan_model(
-    stan_file = stan_code_path,
-    cpp_options = list(stan_threads = TRUE)
+  stan_code_path <- cmdstanr::write_stan_file(
+    code = stan_code,
+    dir = paste0(path, "/stan_model"),
+    basename = "model"
   )
   
+  # TODO: THIS NEEDS A BETTER FIX, FOR NOW, QUICK PATCH
   args_exist <- file.exists(paste0(path, "/stan_model/args.rds"))
   if (args_exist) {
     initial_args <- readRDS(paste0(path, "/stan_model/args.rds"))
     exclude_args <- c('stop_after')
     diffs = waldo::compare(args[!names(args) %in% exclude_args], 
-            initial_args[!names(initial_args) %in% exclude_args])
+                           initial_args[!names(initial_args) %in% exclude_args],
+                           ignore_function_env = TRUE,
+                           ignore_formula_env = TRUE)
     
     if (length(diffs) > 0) {
       stop("Important arguments have been changed. Please reset the checkpointing via reset_checkpoints().", call. = FALSE)
     }
-    message("Sampling next checkpoint")
   } else {
     saveRDS(args, paste0(path, "/stan_model/args.rds"))
   }
+  
+  stan_m3 <- cmdstanr::cmdstan_model(
+    stan_file = stan_code_path,
+    cpp_options = list(stan_threads = TRUE)
+  )
 
   chkpt_set_up <- chkpt_setup(
     iter_warmup = iter_warmup,

@@ -26,8 +26,8 @@ test_that("chkpt_brms picks up after stopping and returns intermediatery results
     iter_sampling = 1200,
     iter_per_chkpt = 200,
     stop_after = 300,
-    path = path,
-  ), "Interupted during warmup. No samples available.")
+    path = path
+  ), "Interupted before or during warmup. No samples available.")
 
   cat("\n\nGet 1 more checkpoints - brmsfit returned even if sampling interupt\n\n")
 
@@ -51,7 +51,7 @@ test_that("chkpt_brms picks up after stopping and returns intermediatery results
     path = path,
     iter_warmup = 400,
     iter_sampling = 1200,
-    iter_per_chkpt = 200,
+    iter_per_chkpt = 200
   )
 
   expect_true(is(fit3, "brmsfit"))
@@ -130,7 +130,7 @@ test_that("chkpt_brms refuses to continue sampling if we change key arguments", 
     iter_warmup = 100,
     iter_sampling = 200,
     iter_per_chkpt = 100
-  ), "arguments have changed")
+  ), "arguments have been changed")
 })
 
 
@@ -149,7 +149,6 @@ test_that("the family can be specified separately from the formula in a
     path = path
   )
   expect_true(is(fit, "brmsfit"))
-  print(fit)
 })
 
 test_that("the family can be specified separately from the formula in a
@@ -180,5 +179,3 @@ test_that("the family can be specified separately from the formula in a
   )
   expect_true(is(fit, "brmsfit"))
 })
-
-withr::deferred_run()

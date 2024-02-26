@@ -1,4 +1,4 @@
-# chkptstanr 0.1.3
+# chkptstanr 0.1.1+
 
 ### New maintainer
 
@@ -6,6 +6,7 @@
 
 ### Major bug fixes
 * Fix major bug `"stan_code_path" not found` when resuming sampling, preventing the core functionality of the package ([original issue #8](https://github.com/donaldRwilliams/chkptstanr/issues/8)]
+* Fix major bug where detecting existing binaries was not working correctly, causing the package to fail to detect changes to arguments and incorrectly continue to sample ()
 * `chkpt_brms()` now works with any `brm()` arguments, including custom families, data2, etc, rather than giving an error ([original issue #15](https://github.com/donaldRwilliams/chkptstanr/issues/15))
 
 ### New features

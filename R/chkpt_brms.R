@@ -182,6 +182,7 @@ chkpt_brms <- function(formula,
                        path,
                        ...) {
   # TODO: MASSIVElY SIMPLIFY AND REFACTOR ALL CODE BELOW AFTER THE HOTFIX IS OUT
+  stan_phase = ""
   args <- c(as.list(environment()), list(...))
 
   withr::defer({
@@ -249,31 +250,30 @@ chkpt_brms <- function(formula,
     )
   }
 
-  # TODO: THIS NEEDS A FIX
-  model_threads_name <- ifelse(.Platform$OS.type == "unix",
-    "model_threads",
-    "model_threads.exe"
+  # TODO: THIS NEEDS A BETTER FIX, FOR NOW, QUICK PATCH
+  # model_threads_name <- ifelse(.Platform$OS.type == "unix",
+  #   "model_threads",
+  #   "model_threads.exe"
+  # )
+  
+  stan_m3 <- cmdstanr::cmdstan_model(
+    stan_file = stan_code_path,
+    cpp_options = list(stan_threads = TRUE)
   )
-
-  if (isFALSE(check_for_model(eval(model_threads_name), path))) {
-    stan_m3 <- cmdstanr::cmdstan_model(
-      stan_file = stan_code_path,
-      cpp_options = list(stan_threads = TRUE)
-    )
-    saveRDS(stan_m3, file = paste0(path, "/stan_model/comp.rds"))
-    saveRDS(args, paste0(path, "/stan_model/args.rds"))
-  } else {
+  
+  args_exist <- file.exists(paste0(path, "/stan_model/args.rds"))
+  if (args_exist) {
     initial_args <- readRDS(paste0(path, "/stan_model/args.rds"))
-
-    if (isFALSE(check_restart(args, initial_args))) {
-      stop("invalid restart (arguments have been changed)",
-        call. = FALSE
-      )
+    exclude_args <- c('stop_after')
+    diffs = waldo::compare(args[!names(args) %in% exclude_args], 
+            initial_args[!names(initial_args) %in% exclude_args])
+    
+    if (length(diffs) > 0) {
+      stop("Important arguments have been changed. Please reset the checkpointing via reset_checkpoints().", call. = FALSE)
     }
-
-    stan_m3 <- readRDS(paste0(path, "/stan_model/comp.rds"))
-
     message("Sampling next checkpoint")
+  } else {
+    saveRDS(args, paste0(path, "/stan_model/args.rds"))
   }
 
   chkpt_set_up <- chkpt_setup(

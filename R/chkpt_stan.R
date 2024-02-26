@@ -148,7 +148,7 @@ chkpt_stan <- function(model_code,
                        iter_sampling = 1000,
                        iter_per_chkpt = 100,
                        iter_typical = 150,
-                       parallel_chains = 2,
+                       parallel_chains = 4,
                        threads_per = 1,
                        chkpt_progress = TRUE,
                        control = NULL,
@@ -193,7 +193,7 @@ chkpt_stan <- function(model_code,
                            ignore_formula_env = TRUE)
     
     if (length(diffs) > 0) {
-      stop("Important arguments have been changed. Please reset the checkpointing via reset_checkpoints().", 
+      stop("Important arguments have been changed. Please completely reset the checkpointing via reset_checkpoints(path, recompile = TRUE).", 
            call. = FALSE)
     }
   } else {

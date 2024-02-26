@@ -25,6 +25,7 @@
 
 ### Other changes
 * Set-up initial automated testing and continuous integration with GitHub Actions to ensure the package is always working as expected
+* Change default number of chains from 2 to 4 to be consistent with brms defaults
 
 # chkptstanr 0.1.1
 

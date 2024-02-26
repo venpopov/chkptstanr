@@ -188,6 +188,7 @@ chkpt_brms <- function(formula,
   withr::defer({
     if (stan_phase %in% c("sample", "complete")) {
       if (is.null(returnValue())) {
+        message("\nSampling aborted. You can examine the results or continue sampling by rerunning the same code.")
         return(return_object(
           brmsfit = brmsfit,
           formula = formula,
@@ -249,14 +250,14 @@ chkpt_brms <- function(formula,
   args_exist <- file.exists(paste0(path, "/stan_model/args.rds"))
   if (args_exist) {
     initial_args <- readRDS(paste0(path, "/stan_model/args.rds"))
-    exclude_args <- c('stop_after')
+    exclude_args <- c('stop_after', 'reset')
     diffs = waldo::compare(args[!names(args) %in% exclude_args], 
                            initial_args[!names(initial_args) %in% exclude_args],
                            ignore_function_env = TRUE,
                            ignore_formula_env = TRUE)
     
     if (length(diffs) > 0) {
-      stop("Important arguments have been changed. Please reset the checkpointing via reset_checkpoints().", call. = FALSE)
+      stop("Important arguments have been changed. Please completely reset the checkpointing via reset_checkpoints(path, recompile = TRUE).", call. = FALSE)
     }
   } else {
     saveRDS(args, paste0(path, "/stan_model/args.rds"))

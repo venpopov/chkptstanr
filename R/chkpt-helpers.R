@@ -12,14 +12,18 @@ file_path2 <- function(...) {
 #'   stan_model/model.stan and stan_model/model.exe. This allows you to restart 
 #'   the sampling from 0 without recompiling the model.
 #' @param path (character) The path to the checkpoint folder.
-#' @param reset (logical) If TRUE, the checkpoint folders are deleted. If FALSE,
+#' @param reset (logical) If TRUE, only the checkpoint folders are deleted
+#' @param recompile (logical) If TRUE, the entire folder is deleted allowing for 
+#'  a fresh start. If both \code{reset} and \code{recompile} are \code{FALSE},
 #'  nothing is done.
 #' @return NULL
 #' @export
-reset_checkpoints <- function(path, reset=TRUE) {
-  if (reset) {
+reset_checkpoints <- function(path, reset = TRUE, recompile = FALSE) {
+  if (reset && !recompile) {
     to_remove <- file_path2(path, c("cmd_fit", "cp_info", "cp_samples"))
     unlink(to_remove, recursive = TRUE)
+  } else if (recompile) {
+    unlink(path, recursive = TRUE)
   }
   return(invisible(reset))
 }

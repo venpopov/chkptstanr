@@ -11,7 +11,7 @@ chkpt_brms(
   iter_sampling = 1000,
   iter_per_chkpt = 100,
   iter_typical = 150,
-  parallel_chains = 2,
+  parallel_chains = 4,
   threads_per = 1,
   chkpt_progress = TRUE,
   control = NULL,

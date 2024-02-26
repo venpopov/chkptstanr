@@ -16,6 +16,7 @@
 * `create_folder()` is deprecated. Please provide the folder name or full path to the argument path directly to `chkpt_brms()` and a folder to store the checkpoints will be created automatically. This significantly simplifies the workflow. 
 * `create_folder()` and the path argument to `chkpt_brms()` and `chkpt_stan()` no longer give an error if a folder already exist, allowing a reusable programmatic workflow
 * `create_folder()` and the path argument to `chkpt_brms()` and `chkpt_stan()` works with nested folder names, e.g. `"output/checkpoints1"`, even if `output/` does not exist
+* remove an unnesessary check that the formula should be a `brmsformula` object, allowing for more flexibility in the input to `chkpt_brms()` such as `mvbrmsformula` objects or other arguments that `brm()` accepts ([original issue #9](https://github.com/donaldRwilliams/chkptstanr/issues/9#issue-1278744728)
 
 ### Minor bug fixes
 * Fix an incorrect error message when providing iter_warmup, iter_sampling, or iter_warmup+iter_sampling not divisible by iter_per_chkpt. The error message now correctly states that the number of iterations per checkpoint must be a divisor of the all three quantities.

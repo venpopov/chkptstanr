@@ -167,7 +167,7 @@ test_that("the family can be specified separately from the formula in a
     path = path,
     stop_after = 300
   )
-  
+
   fit <- chkpt_brms(
     formula = formula,
     family = family,

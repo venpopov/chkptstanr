@@ -60,7 +60,7 @@ the sampling from 0 without recompiling the model.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">reset_checkpoints</span><span class="op">(</span><span class="va">path</span>, reset <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">reset_checkpoints</span><span class="op">(</span><span class="va">path</span>, reset <span class="op">=</span> <span class="cn">TRUE</span>, recompile <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -70,7 +70,12 @@ the sampling from 0 without recompiling the model.</p>
 
 
 <dt>reset</dt>
-<dd><p>(logical) If TRUE, the checkpoint folders are deleted. If FALSE,
+<dd><p>(logical) If TRUE, only the checkpoint folders are deleted</p></dd>
+
+
+<dt>recompile</dt>
+<dd><p>(logical) If TRUE, the entire folder is deleted allowing for
+a fresh start. If both <code>reset</code> and <code>recompile</code> are <code>FALSE</code>,
 nothing is done.</p></dd>
 
 </dl></div>

@@ -221,10 +221,8 @@ chkpt_brms <- function(formula,
 
   # TODO: DON"T REMAKE STAN CODE AND DATA IF EXECUTABLE EXISTS
   if (threads_per == 1) {
-    stan_data <-
-      brms::make_standata(formula = formula, data = data, ...)
-    stan_code <-
-      brms::make_stancode(formula = formula, data = data, ...)
+    stan_data <- brms::make_standata(formula = formula, data = data, ...)
+    stan_code <- brms::make_stancode(formula = formula, data = data, ...)
   } else {
     stan_data <- brms::make_standata(
       formula = formula,
@@ -344,49 +342,27 @@ chkpt_brms <- function(formula,
       return(invisible(NULL))
     }
 
-    if (i <= warmup_chkpts) {
-      stan_phase <- "warmup"
-
-      sample_chunk <- chkpt_sample(
-        model = stan_m3$sample,
-        cmd_args = cmd_args,
-        control = control,
-        progress = chkpt_progress,
-        cp_cmd_args = cp_cmd_args(
-          seed = seed + i,
-          phase = stan_phase,
-          stan_state = stan_state,
-          iter_per_chkpt = iter_per_chkpt
-        )
+    stan_phase <- c("warmup", "sample")[1 + (i > warmup_chkpts)]
+    sample_chunk <- chkpt_sample(
+      model = stan_m3$sample,
+      cmd_args = cmd_args,
+      control = control,
+      progress = chkpt_progress,
+      cp_cmd_args = cp_cmd_args(
+        seed = seed + i,
+        phase = stan_phase,
+        stan_state = stan_state,
+        iter_per_chkpt = iter_per_chkpt,
+        path = path,
+        checkpoint = i
       )
-    } else {
-      stan_phase <- "sample"
-
-      sample_chunk <- chkpt_sample(
-        model = stan_m3$sample,
-        cmd_args = cmd_args,
-        control = control,
-        progress = chkpt_progress,
-        cp_cmd_args = cp_cmd_args(
-          seed = seed + i,
-          phase = stan_phase,
-          stan_state = stan_state,
-          iter_per_chkpt = iter_per_chkpt
-        )
-      )
-
+    )
+    
+    if (stan_phase == "sample") {
       sample_chunk$save_object(paste0(
         path, "/cp_samples/",
         "samples_", i, ".rds"
       ))
-
-      # TODO: THIS CAN BE OPTIMIZED BY DOING ONLY ONCE AT THE END
-      if (brmsfit) {
-        saveRDS(
-          object = rstan::read_stan_csv(sample_chunk$output_files()),
-          file = paste0(path, "/cmd_fit/cmd_fit_", i, ".rds")
-        )
-      }
     }
 
     stan_state <- extract_stan_state(sample_chunk, stan_phase)

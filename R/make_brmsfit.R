@@ -70,3 +70,8 @@ make_brmsfit <- function(object, formula = NULL, data = NULL, path, ...) {
   
   return(fit)
 }
+
+
+combine_samples <- function(files) {
+  return(NULL)
+}

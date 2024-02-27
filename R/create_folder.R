@@ -74,7 +74,7 @@ create_folder <- function(folder_name = "cp_folder", path = NULL) {
 }
 
 .use_checkpoint_folder <- function(path) {
-  subfolders <- c("cmd_fit", "cp_info", "cp_samples", "stan_model")
+  subfolders <- c("cmd_fit", "cp_info", "cp_samples", "stan_model", "cmd_output")
   fs::dir_create(path, subfolders)
   path
 }

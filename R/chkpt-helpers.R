@@ -20,7 +20,7 @@ file_path2 <- function(...) {
 #' @export
 reset_checkpoints <- function(path, reset = TRUE, recompile = FALSE) {
   if (reset && !recompile) {
-    to_remove <- file_path2(path, c("cmd_fit", "cp_info", "cp_samples"))
+    to_remove <- file_path2(path, c("cmd_fit", "cp_info", "cp_samples","cmd_output"))
     unlink(to_remove, recursive = TRUE)
   } else if (recompile) {
     unlink(path, recursive = TRUE)
@@ -121,42 +121,23 @@ chkpt_sample <- function(model,
 cp_cmd_args <- function(seed,
                         phase,
                         stan_state,
-                        iter_per_chkpt){
+                        iter_per_chkpt,
+                        path,
+                        checkpoint){
   
-  if (phase == "warmup") {
-    
-    returned_object <- list(
-      iter_sampling = 0,
-      seed = seed,
-      save_warmup = TRUE,
-      iter_warmup = iter_per_chkpt,
-      adapt_engaged = FALSE,
-      init = stan_state$inits,
-      inv_metric = stan_state$inv_metric,
-      step_size = stan_state$step_size_adapt
-    )
-    
-  } else if (phase == "sample") {
-    
-    returned_object <- list(
-      iter_sampling = iter_per_chkpt,
-      seed = seed,
-      save_warmup = FALSE,
-      iter_warmup = 0,
-      adapt_engaged = FALSE,
-      init = stan_state$inits,
-      inv_metric = stan_state$inv_metric,
-      step_size = stan_state$step_size_adapt
-    )
-    
-  } else {
-    
-    stop("phase must be warmup or sample")
-    
-  }
-  
-  return(returned_object)
-  
+  isWarmup <- phase == "warmup"
+  list(
+    iter_sampling = ifelse(isWarmup, 0, iter_per_chkpt),
+    iter_warmup = ifelse(isWarmup, iter_per_chkpt, 0),
+    seed = seed,
+    save_warmup = isWarmup,
+    adapt_engaged = FALSE,
+    init = stan_state$inits,
+    inv_metric = stan_state$inv_metric,
+    step_size = stan_state$step_size_adapt,
+    output_dir = paste0(path, "/cmd_output"),
+    output_basename = paste0("output_", checkpoint, "_chain")
+  )
 }
 
 # matrix initial values
@@ -243,4 +224,23 @@ stop_quietly <- function() {
   opt <- options(show.error.messages = FALSE)
   on.exit(options(opt))
   stop()
+}
+
+
+create_testing_samples <- function(path, cleanup_rest = TRUE) {
+  unlink(path, recursive = TRUE)
+  formula <- brms::bf(formula = count ~ zAge + zBase)
+  family <- poisson()
+  fit <- chkpt_brms(
+    formula = formula,
+    family = family,
+    data = brms::epilepsy,
+    iter_warmup = 100,
+    iter_sampling = 400,
+    iter_per_chkpt = 100,
+    path = path
+  )
+  if (cleanup_rest) {
+    unlink(file.path(path, c("stan_model","cmd_fit")), recursive = TRUE)
+  }
 }

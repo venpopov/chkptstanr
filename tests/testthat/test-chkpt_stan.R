@@ -8,7 +8,7 @@ test_that("chkpt_stan picks up after stopping", {
   # simplified example from vignete for faster execution
   bf_m1 <- brms::bf(
     formula = count ~ zAge + zBase,
-    family = poisson()
+    family = stats::poisson()
   )
 
   cat("\n\nRunning for 2 checkpoints then stop programatically\n\n")
@@ -48,7 +48,7 @@ test_that("refuses to continue sampling if we change key arguments", {
   # simplified example from vignete for faster execution
   bf_m1 <- brms::bf(
     formula = count ~ zAge + zBase,
-    family = poisson()
+    family = stats::poisson()
   )
   
   cat("\n\nRunning for 2 checkpoints then stop programatically\n\n")

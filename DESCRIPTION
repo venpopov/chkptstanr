@@ -1,6 +1,6 @@
 Package: chkptstanr
 Title: Checkpoint MCMC Sampling with 'Stan'
-Version: 0.1.4
+Version: 0.1.5
 Authors@R: c(
   person(given = "Vencislav", 
     family = "Popov", 
@@ -35,7 +35,9 @@ Imports:
   rstan,
   Rdpack,
   fs,
-  waldo
+  waldo,
+  glue,
+  stringr
 Suggests:
     cmdstanr,
     rmarkdown,

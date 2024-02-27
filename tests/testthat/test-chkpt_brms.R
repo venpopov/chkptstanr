@@ -13,7 +13,7 @@ test_that("chkpt_brms picks up after stopping and returns intermediatery results
   # simplified example from vignete for faster execution
   bf_m1 <- brms::bf(
     formula = count ~ zAge + zBase,
-    family = poisson()
+    family = stats::poisson()
   )
 
   cat("\n\nRunning for 2 checkpoints then stop programatically\n\n")
@@ -105,7 +105,7 @@ test_that("chkpt_brms refuses to continue sampling if we change key arguments", 
   # simplified example from vignete for faster execution
   bf_m1 <- brms::bf(
     formula = count ~ zAge + zBase,
-    family = poisson()
+    family = stats::poisson()
   )
 
   cat("\n\nRunning for 1 checkpoint then stopping\n\n")
@@ -138,7 +138,7 @@ test_that("the family can be specified separately from the formula in a
            base model with no stopping", {
   path <- setup_model_testing(dir = "context4")
   formula <- brms::bf(formula = count ~ zAge + zBase)
-  family <- poisson()
+  family <- stats::poisson()
   fit <- chkpt_brms(
     formula = formula,
     family = family,
@@ -155,7 +155,7 @@ test_that("the family can be specified separately from the formula in a
            base model with stopping before sampling", {
   path <- setup_model_testing(dir = "context5")
   formula <- brms::bf(formula = count ~ zAge + zBase)
-  family <- poisson()
+  family <- stats::poisson()
   fit <- chkpt_brms(
     formula = formula,
     family = family,

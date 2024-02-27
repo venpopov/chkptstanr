@@ -12,7 +12,7 @@ test_that("rstring works with seed", {
 test_that("reset_checkpoints works", {
   path <- tempfile()
   .use_checkpoint_folder(path)
-  expect_equal(dir(path), c("cmd_fit", "cp_info", "cp_samples", "stan_model"))
+  expect_equal(dir(path), c("cmd_output", "cp_info", "cp_samples", "stan_model"))
   reset_checkpoints(path)
   expect_equal(dir(path), "stan_model")
   unlink(path, recursive = TRUE)
@@ -22,7 +22,7 @@ test_that("setup_model_testing works", {
   context <- rstring()
   path <- setup_model_testing(context)
   .use_checkpoint_folder(path)
-  expect_equal(dir(path), c("cmd_fit", "cp_info", "cp_samples", "stan_model"))
+  expect_equal(dir(path), c("cmd_output", "cp_info", "cp_samples", "stan_model"))
   setup_model_testing(dir = context, recompile = FALSE)
   expect_equal(dir(path), c("stan_model"))
   setup_model_testing(dir = context, recompile = TRUE)

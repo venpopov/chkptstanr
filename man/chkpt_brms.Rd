@@ -7,15 +7,14 @@
 chkpt_brms(
   formula,
   data,
+  iter_adaptation = 150,
   iter_warmup = 1000,
   iter_sampling = 1000,
   iter_per_chkpt = 100,
-  iter_typical = 150,
   parallel_chains = 4,
   threads_per = 1,
   chkpt_progress = TRUE,
   control = NULL,
-  brmsfit = TRUE,
   seed = 1,
   stop_after = NULL,
   reset = FALSE,
@@ -31,8 +30,15 @@ Further information can be found in  \code{\link[brms]{brmsformula}}.}
 \item{data}{An object of class \code{data.frame} (or one that can be coerced
 to that class) containing data of all variables used in the model.}
 
+\item{iter_adaptation}{(positive integer) The number of iterations in the
+initial warmup, which are used for the adaptation of the step size and
+inverse mass matrix. This is equivalent to the traditional warmup stage.
+Checkpointing will begin only after this stage is complete.}
+
 \item{iter_warmup}{(positive integer) The number of warmup iterations to run
-per chain (defaults to 1000).}
+per chain after the adaptation stage (defaults to 1000). During this stage
+the step size and inverse mass matrix are fixed to the values found during
+the adaptation stage. There is no further adaptation performed.}
 
 \item{iter_sampling}{(positive integer) The number of post-warmup iterations
 to run per chain (defaults to 1000).}
@@ -41,11 +47,6 @@ to run per chain (defaults to 1000).}
 checkpoint. Note that \code{iter_sampling} is divided by
 \code{iter_per_chkpt} to determine the number of checkpoints. This must
 result in an integer (if not, there will be an error).}
-
-\item{iter_typical}{(positive integer) The number of iterations in the
-initial warmup, which finds the so-called typical set. This is an initial
-phase, and not included in \code{iter_warmup}. Note that a large enough
-value is required to ensure convergence (defaults to 150).}
 
 \item{parallel_chains}{(positive integer) The \emph{maximum number} of MCMC
 chains to run in parallel. If parallel_chains is not specified then the
@@ -64,9 +65,6 @@ actually keep track of checkpointing progress)}
 \item{control}{A named list of parameters to control the sampler's behavior.
 It defaults to NULL so all the default values are used. For a comprehensive
 overview see \code{\link[rstan]{stan}}.}
-
-\item{brmsfit}{Logical. Should a \code{brmsfit} object be returned (defaults
-to \code{TRUE}).}
 
 \item{seed}{(positive integer). The seed for random number generation to make
 results reproducible.}
@@ -94,8 +92,7 @@ including, but not limited to, user-defined prior distributions, the
 custom_families, etc.}
 }
 \value{
-An object of class \code{brmsfit} (with \code{brmsfit = TRUE}) or
-\code{chkpt_brms} (with \code{brmsfit = FALSE}).
+An object of class \code{brmsfit}
 }
 \description{
 Fit Bayesian generalized (non-)linear multivariate multilevel
@@ -106,7 +103,7 @@ A folder specified by \code{path} is created with four subfolders:
 
 \itemize{
 
-\item \strong{cmd_fit}: The cmdstanr fittted models (one for each checkpoint).
+\item \strong{cmd_output}: The cmdstanr output_files (one for each checkpoint and chain).
 
 \item \strong{cp_info}: Mass matrix, step size, and initial values for
 next checkpoint (last iteration from previous checkpoint).

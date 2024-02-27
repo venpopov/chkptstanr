@@ -4,20 +4,15 @@
 \alias{make_brmsfit}
 \title{Make \code{brmsfit} Object}
 \usage{
-make_brmsfit(object, formula = NULL, data = NULL, path, ...)
+make_brmsfit(formula, data, path, ...)
 }
 \arguments{
-\item{object}{An object of class \code{chkpt_brms}}
+\item{formula}{A \code{brms} formula used to generate the checkpoints}
 
-\item{formula}{An object of class \code{\link[stats]{formula}},
-\code{\link[brms]{brmsformula}}, or \code{\link{brms}{mvbrmsformula}}.
-Further information can be found in  \code{\link[brms]{brmsformula}}.}
+\item{data}{A data frame used to generate the checkpoints}
 
-\item{data}{An object of class \code{data.frame} (or one that can be coerced to that class)
-containing data of all variables used in the model.}
-
-\item{path}{Character string. The path to the folder, that is used for
-saving the checkpoints.}
+\item{path}{Character string. The path to the folder, that is used for saving
+the checkpoints.}
 
 \item{...}{Additional arguments to be passed to \code{brm}.}
 }
@@ -25,10 +20,11 @@ saving the checkpoints.}
 An object of class \code{brmsfit}
 }
 \description{
-This is primarily used internally, wherein the \code{cmdstanr}
+This is primarily used internally, wherein the output files of
+multiple cmdstanr fits are combined into a single \code{brmsfit} object.
 object is converted into a \code{brmsfit} object.
 }
 \note{
-This is primarily an internal function that constructs
-a \code{brmsfit} object.
+This is primarily an internal function that constructs a \code{brmsfit}
+object.
 }

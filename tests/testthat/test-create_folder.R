@@ -4,7 +4,7 @@ test_that("create_folder works and is deprecated", {
   
   suppressWarnings({
     expect_equal(path, create_folder(path))
-    expect_equal(dir(path), c("cmd_fit", "cp_info", "cp_samples", "stan_model"))
+    expect_equal(dir(path), c("cmd_output", "cp_info", "cp_samples", "stan_model"))
   })
   
   unlink(path, recursive = TRUE)

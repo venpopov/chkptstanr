@@ -20,7 +20,7 @@ file_path2 <- function(...) {
 #' @export
 reset_checkpoints <- function(path, reset = TRUE, recompile = FALSE) {
   if (reset && !recompile) {
-    to_remove <- file_path2(path, c("cmd_fit", "cp_info", "cp_samples"))
+    to_remove <- file_path2(path, c("cp_info", "cp_samples","cmd_output"))
     unlink(to_remove, recursive = TRUE)
   } else if (recompile) {
     unlink(path, recursive = TRUE)
@@ -61,14 +61,14 @@ rstring <- function(n = 10, char_set = c(letters, LETTERS, 0:9), seed = NULL) {
 chkpt_typical <- function(model,
                           cmd_args,
                           control,
-                          iter_typical,
+                          iter_adaptation,
                           seed,
                           progress) {
   
   cmd_args$iter_sampling <- 0
   cmd_args$seed <- seed
   cmd_args$save_warmup <- TRUE
-  cmd_args$iter_warmup <- iter_typical
+  cmd_args$iter_warmup <- iter_adaptation
   
   if (progress) {
     capture_output <- capture.output({
@@ -121,42 +121,30 @@ chkpt_sample <- function(model,
 cp_cmd_args <- function(seed,
                         phase,
                         stan_state,
-                        iter_per_chkpt){
+                        iter_per_chkpt,
+                        path,
+                        checkpoint){
   
-  if (phase == "warmup") {
-    
-    returned_object <- list(
-      iter_sampling = 0,
-      seed = seed,
-      save_warmup = TRUE,
-      iter_warmup = iter_per_chkpt,
-      adapt_engaged = FALSE,
-      init = stan_state$inits,
-      inv_metric = stan_state$inv_metric,
-      step_size = stan_state$step_size_adapt
-    )
-    
-  } else if (phase == "sample") {
-    
-    returned_object <- list(
-      iter_sampling = iter_per_chkpt,
-      seed = seed,
-      save_warmup = FALSE,
-      iter_warmup = 0,
-      adapt_engaged = FALSE,
-      init = stan_state$inits,
-      inv_metric = stan_state$inv_metric,
-      step_size = stan_state$step_size_adapt
-    )
-    
-  } else {
-    
-    stop("phase must be warmup or sample")
-    
-  }
-  
-  return(returned_object)
-  
+  isWarmup <- phase == "warmup"
+  list(
+    iter_sampling = ifelse(isWarmup, 0, iter_per_chkpt),
+    iter_warmup = ifelse(isWarmup, iter_per_chkpt, 0),
+    seed = seed,
+    save_warmup = isWarmup,
+    adapt_engaged = FALSE,
+    init = stan_state$inits,
+    inv_metric = stan_state$inv_metric,
+    step_size = stan_state$step_size_adapt,
+    output_dir = paste0(path, "/cmd_output"),
+    output_basename = paste0("output_", 
+                             stringr::str_pad(checkpoint, 
+                                              width = 3, 
+                                              side = "left", 
+                                              pad = "0"),
+                             "_",
+                             phase,
+                             "_chain")
+  )
 }
 
 # matrix initial values
@@ -243,4 +231,32 @@ stop_quietly <- function() {
   opt <- options(show.error.messages = FALSE)
   on.exit(options(opt))
   stop()
+}
+
+
+create_testing_samples <- function(path, cleanup_rest = TRUE, seed = 1234) {
+  withr::local_seed(seed)
+  unlink(path, recursive = TRUE)
+  formula <- brms::bf(formula = count ~ zAge + zBase)
+  family <- stats::poisson()
+  fit <- chkpt_brms(
+    formula = formula,
+    family = family,
+    data = brms::epilepsy,
+    iter_warmup = 100,
+    iter_sampling = 400,
+    iter_per_chkpt = 100,
+    path = path,
+    seed = seed
+  )
+  if (cleanup_rest) {
+    unlink(file_path2(path, c("stan_model")), recursive = TRUE)
+  }
+}
+
+strip_attributes <- function(x, protect = c("names", "row.names", "class")) {
+  to_remove <- names(attributes(x))
+  to_remove <- to_remove[!to_remove %in% protect]
+  attributes(x)[to_remove] <- NULL
+  return(x)
 }

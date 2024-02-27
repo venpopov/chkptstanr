@@ -7,6 +7,7 @@
 ### Major bug fixes
 * Fix major bug `"stan_code_path" not found` when resuming sampling, preventing the core functionality of the package ([original issue #8](https://github.com/donaldRwilliams/chkptstanr/issues/8)]
 * Fix major bug where detecting existing binaries was not working correctly, causing the package to fail to detect changes to arguments and incorrectly continue to sample ()
+* Fix major bug that caused incorrect combination of checkpoints, leading to problems with postprocessing methods (#8)
 * `chkpt_brms()` now works with any `brm()` arguments, including custom families, data2, etc, rather than giving an error ([original issue #15](https://github.com/donaldRwilliams/chkptstanr/issues/15))
 
 ### New features
@@ -26,6 +27,7 @@
 ### Other changes
 * Set-up initial automated testing and continuous integration with GitHub Actions to ensure the package is always working as expected
 * Change default number of chains from 2 to 4 to be consistent with brms defaults
+* renamed argument "iter_typical" to "iter_adaptation" to better reflect what this stage is doing. iter_typical is deprecated
 
 # chkptstanr 0.1.1
 

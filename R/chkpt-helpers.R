@@ -20,7 +20,7 @@ file_path2 <- function(...) {
 #' @export
 reset_checkpoints <- function(path, reset = TRUE, recompile = FALSE) {
   if (reset && !recompile) {
-    to_remove <- file_path2(path, c("cmd_fit", "cp_info", "cp_samples","cmd_output"))
+    to_remove <- file_path2(path, c("cp_info", "cp_samples","cmd_output"))
     unlink(to_remove, recursive = TRUE)
   } else if (recompile) {
     unlink(path, recursive = TRUE)
@@ -136,7 +136,14 @@ cp_cmd_args <- function(seed,
     inv_metric = stan_state$inv_metric,
     step_size = stan_state$step_size_adapt,
     output_dir = paste0(path, "/cmd_output"),
-    output_basename = paste0("output_", checkpoint, "_chain")
+    output_basename = paste0("output_", 
+                             stringr::str_pad(checkpoint, 
+                                              width = 3, 
+                                              side = "left", 
+                                              pad = "0"),
+                             "_",
+                             phase,
+                             "_chain")
   )
 }
 
@@ -231,7 +238,7 @@ create_testing_samples <- function(path, cleanup_rest = TRUE, seed = 1234) {
   withr::local_seed(seed)
   unlink(path, recursive = TRUE)
   formula <- brms::bf(formula = count ~ zAge + zBase)
-  family <- poisson()
+  family <- stats::poisson()
   fit <- chkpt_brms(
     formula = formula,
     family = family,
@@ -243,7 +250,7 @@ create_testing_samples <- function(path, cleanup_rest = TRUE, seed = 1234) {
     seed = seed
   )
   if (cleanup_rest) {
-    unlink(file.path(path, c("stan_model","cmd_fit")), recursive = TRUE)
+    unlink(file_path2(path, c("stan_model")), recursive = TRUE)
   }
 }
 

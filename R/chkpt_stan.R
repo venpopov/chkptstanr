@@ -186,7 +186,7 @@ chkpt_stan <- function(model_code,
   args_exist <- file.exists(paste0(path, "/stan_model/args.rds"))
   if (args_exist) {
     initial_args <- readRDS(paste0(path, "/stan_model/args.rds"))
-    exclude_args <- c('stop_after')
+    exclude_args <- c('stop_after', 'reset')
     diffs = waldo::compare(args[!names(args) %in% exclude_args], 
                            initial_args[!names(initial_args) %in% exclude_args],
                            ignore_function_env = TRUE,
@@ -277,6 +277,8 @@ chkpt_stan <- function(model_code,
           seed = seed + i,
           phase = stan_phase,
           stan_state = stan_state,
+          path = path,
+          checkpoint = i,
           iter_per_chkpt = iter_per_chkpt
         )
       )
@@ -292,6 +294,8 @@ chkpt_stan <- function(model_code,
           seed = seed + i,
           phase = stan_phase,
           stan_state = stan_state,
+          path = path,
+          checkpoint = i,
           iter_per_chkpt = iter_per_chkpt
         )
       )
@@ -319,27 +323,4 @@ chkpt_stan <- function(model_code,
   returned_object <- list(args = args)
   class(returned_object) <- "chkpt_stan"
   return(returned_object)
-}
-
-
-#' @title Print \code{chkpt_stan} Objects
-#'
-#' @param x Object of class \code{chkpt_stan}
-#' @param ... Currently ignored
-#'
-#' @note
-#'
-#' This function mainly avoids printing out a list.
-#'
-#' Typically, after fitting, the posterior draws should be summarized with
-#' \code{\link[chkptstanr]{combine_chkpt_draws}}.
-#'
-#' @return No return value, and used to print the \code{chkpt_stan} object.
-#'
-#' @export
-print.chkpt_stan <- function(x, ...) {
-  cat("chkptstanr \n")
-  cat("----- \n")
-  cat("Date:", date(), "\n")
-  cat("(see 'combine_chkpt_draws') \n")
 }

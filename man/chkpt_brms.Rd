@@ -15,7 +15,6 @@ chkpt_brms(
   threads_per = 1,
   chkpt_progress = TRUE,
   control = NULL,
-  brmsfit = TRUE,
   seed = 1,
   stop_after = NULL,
   reset = FALSE,
@@ -65,9 +64,6 @@ actually keep track of checkpointing progress)}
 It defaults to NULL so all the default values are used. For a comprehensive
 overview see \code{\link[rstan]{stan}}.}
 
-\item{brmsfit}{Logical. Should a \code{brmsfit} object be returned (defaults
-to \code{TRUE}).}
-
 \item{seed}{(positive integer). The seed for random number generation to make
 results reproducible.}
 
@@ -94,8 +90,7 @@ including, but not limited to, user-defined prior distributions, the
 custom_families, etc.}
 }
 \value{
-An object of class \code{brmsfit} (with \code{brmsfit = TRUE}) or
-\code{chkpt_brms} (with \code{brmsfit = FALSE}).
+An object of class \code{brmsfit}
 }
 \description{
 Fit Bayesian generalized (non-)linear multivariate multilevel
@@ -106,7 +101,7 @@ A folder specified by \code{path} is created with four subfolders:
 
 \itemize{
 
-\item \strong{cmd_fit}: The cmdstanr fittted models (one for each checkpoint).
+\item \strong{cmd_output}: The cmdstanr output_files (one for each checkpoint and chain).
 
 \item \strong{cp_info}: Mass matrix, step size, and initial values for
 next checkpoint (last iteration from previous checkpoint).

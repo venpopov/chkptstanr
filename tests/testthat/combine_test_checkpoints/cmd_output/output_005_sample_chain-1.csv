@@ -2,7 +2,7 @@
 # stan_version_minor = 34
 # stan_version_patch = 1
 # model = model_model
-# start_datetime = 2024-02-27 16:12:18 UTC
+# start_datetime = 2024-02-27 18:06:30 UTC
 # method = sample (Default)
 #   sample
 #     num_samples = 100
@@ -25,18 +25,18 @@
 #           nuts
 #             max_depth = 10 (Default)
 #         metric = diag_e (Default)
-#         metric_file = C:\Users\vepopo\AppData\Local\Temp\RtmpIR14wl\inv_metric-1-412072967013.json
+#         metric_file = C:\Users\vepopo\AppData\Local\Temp\RtmpARJJIc\inv_metric-1-30d85553136f.json
 #         stepsize = 0.537664
 #         stepsize_jitter = 0 (Default)
 #     num_chains = 1 (Default)
 # id = 1 (Default)
 # data
-#   file = C:/Users/vepopo/AppData/Local/Temp/RtmpIR14wl/standata-41204f037c03.json
-# init = C:/Users/vepopo/AppData/Local/Temp/RtmpIR14wl/init-1-41208067463.json
+#   file = C:/Users/vepopo/AppData/Local/Temp/RtmpARJJIc/standata-30d827dc60f2.json
+# init = C:/Users/vepopo/AppData/Local/Temp/RtmpARJJIc/init-1-30d846503fc6.json
 # random
 #   seed = 1239
 # output
-#   file = C:/Users/vepopo/OneDrive/research/rpackages/chkptstanr/tests/testthat/combine_test_checkpoints/cmd_output/output_5_chain-1.csv
+#   file = C:/Users/vepopo/OneDrive/research/rpackages/chkptstanr/tests/testthat/combine_test_checkpoints/cmd_output/output_005_sample_chain-1.csv
 #   diagnostic_file =  (Default)
 #   refresh = 100 (Default)
 #   sig_figs = -1 (Default)
@@ -152,6 +152,6 @@ lp__,accept_stat__,stepsize__,treedepth__,n_leapfrog__,divergent__,energy__,b.1,
 -868.944,1,0.537664,2,3,0,869.721,0.165613,0.590885,1.86146,-1.93977,1.86146
 # 
 #  Elapsed Time: 0 seconds (Warm-up)
-#                0.008 seconds (Sampling)
-#                0.008 seconds (Total)
+#                0.007 seconds (Sampling)
+#                0.007 seconds (Total)
 # 

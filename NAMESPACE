@@ -2,7 +2,6 @@
 
 S3method(print,chkpt_brms)
 S3method(print,chkpt_setup)
-S3method(print,chkpt_stan)
 export(chkpt_brms)
 export(chkpt_setup)
 export(chkpt_stan)

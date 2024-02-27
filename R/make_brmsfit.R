@@ -1,74 +1,34 @@
 #' @title Make \code{brmsfit} Object
-#' 
-#' @description This is primarily used internally, wherein the \code{cmdstanr} 
-#' object is converted into a \code{brmsfit} object.
-#' 
-#' @param object An object of class \code{chkpt_brms}
-#' 
-#' @param formula An object of class \code{\link[stats]{formula}}, 
-#'                \code{\link[brms]{brmsformula}}, or \code{\link{brms}{mvbrmsformula}}.
-#'                Further information can be found in  \code{\link[brms]{brmsformula}}.
-#'                
-#' 
-#' @param data  An object of class \code{data.frame} (or one that can be coerced to that class) 
-#'             containing data of all variables used in the model.
-#' 
-#' @param path Character string. The path to the folder, that is used for 
-#'             saving the checkpoints.
-#'             
+#'
+#' @description This is primarily used internally, wherein the output files of
+#'   multiple cmdstanr fits are combined into a single \code{brmsfit} object.
+#'   object is converted into a \code{brmsfit} object.
+#'
+#' @param formula A \code{brms} formula used to generate the checkpoints
+#' @param data A data frame used to generate the checkpoints
+#' @param path Character string. The path to the folder, that is used for saving
+#'   the checkpoints.
+#'
 #' @param ... Additional arguments to be passed to \code{brm}.
-#' 
-#' @importFrom brms brm 
-#' 
+#'
+#' @importFrom brms brm
+#'
 #' @return An object of class \code{brmsfit}
-#' 
-#' @note This is primarily an internal function that constructs
-#' a \code{brmsfit} object.
-#' 
+#'
+#' @note This is primarily an internal function that constructs a \code{brmsfit}
+#'   object.
+#'
 #' @export
-make_brmsfit <- function(object, formula = NULL, data = NULL, path, ...) {
-  
-  if(is.null(formula)){
-    formula <- object$args$formula
-  }
-  
-  if(is.null(data)){
-    data <- object$args$data
-  }
-
+make_brmsfit <- function(formula, data, path, ...) {
+  dots <- list(...)
   fit <- brms::brm(formula = formula,
-                   data = data, 
-                   empty = TRUE,
+                   data = data,
+                   empty = TRUE, 
                    ...)
-
-  file_names <- list.files(paste0(path, "/cmd_fit/"))
-  
-  checkpoints <- length(file_names)
-  
-  ordered_file_names <- paste0(path, "/cmd_fit/cmd_fit_",
-                               sort(as.numeric(
-                                 gsub(".*fit_(.+).rds.*", "\\1", file_names)
-                               )), ".rds")
-  
-  stanfit_to_brms <- readRDS(ordered_file_names[1])
-  
-  chains <- stanfit_to_brms@sim$chains
-  
-  for (i in seq_len(chains)) {
-    stanfit_to_brms@sim$samples[[i]] <-
-      do.call(rbind, lapply(seq_len(checkpoints), function(x) {
-        readRDS(ordered_file_names[x])@sim$samples[[i]]
-      }))
-    
-  }
-  
-  stanfit_to_brms@sim$n_save <- stanfit_to_brms@sim$n_save * checkpoints
-  
-  fit$fit <- stanfit_to_brms
-  
-  fit <- brms::rename_pars(fit)
-  
-  return(fit)
+  file_names <- list.files(paste0(path, "/cmd_output/"), full.names = TRUE)
+  fit$fit <- combine_samples(file_names, save_warmup = isTRUE(dots$save_warmup))
+  fit$path <- path
+  brms::rename_pars(fit)
 }
 
 # if multiple stan fits are saved to the same folder, the read_stan_csv_multiple,
@@ -82,16 +42,24 @@ read_stan_csv_multiple <- function(files, idpattern='output_[0-9]+_') {
   fits <- list()
   ids <- unique(stringr::str_extract(files,idpattern))
   for (i in ids) {
-    fits[[i]] <- rstan::read_stan_csv(files[grepl(i, files)])
+    fit_files <- files[grepl(i, files)]
+    fits[[i]] <- rstan::read_stan_csv(fit_files)
+    attr(fits[[i]],'checkpoint_phase') <- 
+      unique(stringr::str_extract(fit_files,'warmup|sample'))
   }
   fits
 }
 
-combine_samples <- function(files, warmup_chkpts, save_warmup = FALSE) {
+combine_samples <- function(files, save_warmup = FALSE) {
   # a list of stanfit objects for each checkpoint
   checkpoint_fits <- read_stan_csv_multiple(files, idpattern = 'output_[0-9]+_')
+  fit_phase <- sapply(checkpoint_fits, function(x) {
+    attr(x, 'checkpoint_phase')
+  })
   n_chkpts <- length(checkpoint_fits)
-  available_checkpoints <- 1:n_chkpts
+  n_wchkpts <- sum(fit_phase == 'warmup')
+  n_schkpts <- sum(fit_phase == 'sample')
+  checkpoints <- 1:n_chkpts
   
   # an initial object to store the combined checkpoint samples
   out <- checkpoint_fits[[1]]
@@ -99,12 +67,12 @@ combine_samples <- function(files, warmup_chkpts, save_warmup = FALSE) {
   
   # calculate total number of iterations and warmup
   iter <- out@sim$iter * n_chkpts
-  warmup <- out@sim$warmup * min(warmup_chkpts, n_chkpts)
+  warmup <- out@sim$warmup * n_wchkpts
   n_save <- out@sim$n_save * n_chkpts - warmup * !save_warmup
   warmup2 <- rep(warmup, chains)  - warmup * !save_warmup
-  save_checkpoints <- available_checkpoints
+  save_checkpoints <- checkpoints
   if (!save_warmup) {
-    save_checkpoints <- save_checkpoints[-seq_len(min(warmup_chkpts, n_chkpts))]
+    save_checkpoints <- save_checkpoints[-seq_len(n_wchkpts)]
   }
   
   if (length(save_checkpoints) == 0) {
@@ -146,7 +114,7 @@ combine_samples <- function(files, warmup_chkpts, save_warmup = FALSE) {
     attr(samples[[i]], "args") <- 
       attr(checkpoint_fits[[1]]@sim$samples[[i]], "args")
     
-    elapsed_time <- sapply(available_checkpoints, function(x) {
+    elapsed_time <- sapply(checkpoints, function(x) {
       attr(checkpoint_fits[[x]]@sim$samples[[i]], "elapsed_time")
     })
     elapsed_time <- rowSums(elapsed_time)

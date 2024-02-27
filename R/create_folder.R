@@ -23,7 +23,7 @@
 #'
 #' \itemize{
 #'
-#' \item \strong{cmd_fit}: The cmdstanr fittted models (one for each checkpoint).
+#' \item \strong{cmd_output}: The cmdstanr output_files (one for each checkpoint and chain).
 #'
 #' \item \strong{cp_info}: Mass matrix, step size, and initial values for
 #'                       next checkpoint (last iteration from previous checkpoint).
@@ -58,7 +58,7 @@
 #'
 #' # repeat - warning, but folders are kept
 #' path <- create_folder(folder_name = 'cp_folder')
-#' identical(dir(path), c('cmd_fit', 'cp_info', 'cp_samples', 'stan_model'))
+#' identical(dir(path), c('cmd_output', 'cp_info', 'cp_samples', 'stan_model'))
 #'
 #' unlink('cp_folder', recursive = TRUE)
 #'
@@ -74,7 +74,7 @@ create_folder <- function(folder_name = "cp_folder", path = NULL) {
 }
 
 .use_checkpoint_folder <- function(path) {
-  subfolders <- c("cmd_fit", "cp_info", "cp_samples", "stan_model", "cmd_output")
+  subfolders <- c("cmd_output", "cp_info", "cp_samples", "stan_model")
   fs::dir_create(path, subfolders)
   path
 }

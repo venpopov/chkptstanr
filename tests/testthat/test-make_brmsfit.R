@@ -1,11 +1,12 @@
 test_that('combine_samples works', {
+  skip_on_cran()
   # note, the test checkpoint files were generate via 
   # create_testing_samples('tests/testthat/combine_test_checkpoints')
   path <- test_path('combine_test_checkpoints')
   sample_files <- list.files(paste0(path, "/cmd_output/"), full.names = TRUE)
   ind_fits <- read_stan_csv_multiple(sample_files, idpattern = 'output_[0-9]+_')
   
-  res <- combine_samples(sample_files, warmup_chkpts = 1, save_warmup = FALSE)
+  res <- combine_samples(sample_files, save_warmup = FALSE)
   chains <- res@sim$chains
   sim <- res@sim
   samples <- sim$samples

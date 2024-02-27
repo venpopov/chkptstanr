@@ -45,9 +45,6 @@
 #'   It defaults to NULL so all the default values are used. For a comprehensive
 #'   overview see \code{\link[rstan]{stan}}.
 #'
-#' @param brmsfit Logical. Should a \code{brmsfit} object be returned (defaults
-#'   to \code{TRUE}).
-#'
 #' @param seed (positive integer). The seed for random number generation to make
 #'   results reproducible.
 #'
@@ -73,16 +70,14 @@
 #'   \code{\link[brms]{brmsfamily}} (e.g., \code{family = poisson())}, data2,
 #'   custom_families, etc.
 #'
-#' @return An object of class \code{brmsfit} (with \code{brmsfit = TRUE}) or
-#'   \code{chkpt_brms} (with \code{brmsfit = FALSE}).
-#'
+#' @return An object of class \code{brmsfit}
 #' @note
 #'
 #' A folder specified by \code{path} is created with four subfolders:
 #'
 #' \itemize{
 #'
-#' \item \strong{cmd_fit}: The cmdstanr fittted models (one for each checkpoint).
+#' \item \strong{cmd_output}: The cmdstanr output_files (one for each checkpoint and chain).
 #'
 #' \item \strong{cp_info}: Mass matrix, step size, and initial values for
 #'                       next checkpoint (last iteration from previous checkpoint).
@@ -175,7 +170,6 @@ chkpt_brms <- function(formula,
                        threads_per = 1,
                        chkpt_progress = TRUE,
                        control = NULL,
-                       brmsfit = TRUE,
                        seed = 1,
                        stop_after = NULL,
                        reset = FALSE,
@@ -188,14 +182,9 @@ chkpt_brms <- function(formula,
   withr::defer({
     if (stan_phase %in% c("sample", "complete")) {
       if (is.null(returnValue())) {
-        message("\nSampling aborted. You can examine the results or continue sampling by rerunning the same code.")
-        return(return_object(
-          brmsfit = brmsfit,
-          formula = formula,
-          data = data,
-          path = path,
-          ...
-        ))
+        message("\nSampling aborted. You can examine the results or continue", 
+                " sampling by rerunning the same code.")
+        return(make_brmsfit(formula = formula, data = data, path = path, ...))
       }
     } else {
       message("\nInterupted before or during warmup. No samples available.")
@@ -313,14 +302,9 @@ chkpt_brms <- function(formula,
   }
 
   if (last_chkpt == total_chkpts) {
+    stan_phase <- "complete"
     message("Checkpointing complete")
-    return(return_object(
-      brmsfit = brmsfit,
-      formula = formula,
-      data = data,
-      path = path,
-      ...
-    ))
+    return(make_brmsfit(formula = formula, data = data, path = path, ...))
   } else {
     # TODO: remove unnecessary else clause
     cp_seq <- seq(last_chkpt + 1, total_chkpts)
@@ -330,13 +314,7 @@ chkpt_brms <- function(formula,
     if (!is.null(stop_after) && i > stop_at_checkpoint) {
       message("Stopping after ", stop_at_checkpoint, " checkpoints")
       if (i > warmup_chkpts + 1) {
-        return(return_object(
-          brmsfit = brmsfit,
-          formula = formula,
-          data = data,
-          path = path,
-          ...
-        ))
+        return(make_brmsfit(formula = formula, data = data, path = path, ...))
       }
       stan_phase <- "warmup"
       return(invisible(NULL))
@@ -377,30 +355,9 @@ chkpt_brms <- function(formula,
     if (i == total_chkpts) {
       message("Checkpointing complete")
       stan_phase <- "complete"
-      return(return_object(
-        brmsfit = brmsfit,
-        formula = formula,
-        data = data,
-        path = path,
-        ...
-      ))
+      return(make_brmsfit(formula = formula, data = data, path = path, ...))
     }
   }
-}
-
-
-return_object <- function(brmsfit, ...) {
-  dots <- list(...)
-  args <- dots$args
-  dots$args <- NULL
-  if (brmsfit) {
-    out <- brms::do_call(make_brmsfit, dots)
-  } else {
-    out <- list(args = args)
-    class(out) <- "chkpt_brms"
-  }
-  out$path <- dots$path
-  out
 }
 
 

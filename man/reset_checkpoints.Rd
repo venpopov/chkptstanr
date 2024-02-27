@@ -4,12 +4,15 @@
 \alias{reset_checkpoints}
 \title{Delete Checkpoint Folders containing samples, keep the model}
 \usage{
-reset_checkpoints(path, reset = TRUE)
+reset_checkpoints(path, reset = TRUE, recompile = FALSE)
 }
 \arguments{
 \item{path}{(character) The path to the checkpoint folder.}
 
-\item{reset}{(logical) If TRUE, the checkpoint folders are deleted. If FALSE,
+\item{reset}{(logical) If TRUE, only the checkpoint folders are deleted}
+
+\item{recompile}{(logical) If TRUE, the entire folder is deleted allowing for
+a fresh start. If both \code{reset} and \code{recompile} are \code{FALSE},
 nothing is done.}
 }
 \description{

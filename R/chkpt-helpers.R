@@ -227,7 +227,8 @@ stop_quietly <- function() {
 }
 
 
-create_testing_samples <- function(path, cleanup_rest = TRUE) {
+create_testing_samples <- function(path, cleanup_rest = TRUE, seed = 1234) {
+  withr::local_seed(seed)
   unlink(path, recursive = TRUE)
   formula <- brms::bf(formula = count ~ zAge + zBase)
   family <- poisson()
@@ -238,9 +239,17 @@ create_testing_samples <- function(path, cleanup_rest = TRUE) {
     iter_warmup = 100,
     iter_sampling = 400,
     iter_per_chkpt = 100,
-    path = path
+    path = path,
+    seed = seed
   )
   if (cleanup_rest) {
     unlink(file.path(path, c("stan_model","cmd_fit")), recursive = TRUE)
   }
+}
+
+strip_attributes <- function(x, protect = c("names", "row.names", "class")) {
+  to_remove <- names(attributes(x))
+  to_remove <- to_remove[!to_remove %in% protect]
+  attributes(x)[to_remove] <- NULL
+  return(x)
 }

@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chkptstanr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -107,342 +107,217 @@ workflow is very similar to using <strong>brms</strong>.</p>
 <h2 id="example-1-no-stopping">Example 1: No Stopping<a class="anchor" aria-label="anchor" href="#example-1-no-stopping"></a>
 </h2>
 <div class="section level3">
-<h3 id="storage">Storage<a class="anchor" aria-label="anchor" href="#storage"></a>
-</h3>
-<p>The initial overhead is to create a folder that will store the
-checkpoints, i.e.,</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_folder.html">create_folder</a></span><span class="op">(</span>folder_name  <span class="op">=</span> <span class="st">"chkpt_folder_m1"</span><span class="op">)</span></span></code></pre></div>
-<p>which contains several additional folders (details can be found in
-the documentation).</p>
-</div>
-<div class="section level3">
-<h3 id="brmsformula">
-<code>brmsformula</code><a class="anchor" aria-label="anchor" href="#brmsformula"></a>
-</h3>
-<p>In this example, we create a <code>brmsformula</code> object using
-<code><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf()</a></code>. Note that for this model, we could also use formula
-argument (e.g., <code>formula = y ~ x</code>), but in our experiences
-<code><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf()</a></code> is more general.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bf_m1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">count</span> <span class="op">~</span> <span class="va">zAge</span> <span class="op">+</span> <span class="va">zBase</span>  <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">patient</span><span class="op">)</span>,</span>
-<span>            family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
 <h3 id="model-fitting">Model Fitting<a class="anchor" aria-label="anchor" href="#model-fitting"></a>
 </h3>
-<p>The next step is to use <code><a href="../reference/chkpt_brms.html">chkpt_brms()</a></code>:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit_m1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span></span>
-<span>  formula <span class="op">=</span> <span class="va">bf_m1</span>,</span>
-<span>  data <span class="op">=</span> <span class="va">epilepsy</span>,</span>
-<span>  path  <span class="op">=</span> <span class="va">path</span>,</span>
-<span>  iter_warmup <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  iter_sampling <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  iter_per_chkpt <span class="op">=</span> <span class="fl">250</span>,</span>
-<span><span class="op">)</span></span></code></pre></div>
+<p>You can use chkpt_brms in nearly the same way as brm. The only
+difference is that you need to specify the path to the folder where the
+checkpoints will be stored, and the number of iterations between each
+checkpoint.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span><span class="va">count</span> <span class="op">~</span> <span class="va">zAge</span> <span class="op">+</span> <span class="va">zBase</span> <span class="op">*</span> <span class="va">Trt</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">patient</span><span class="op">)</span>,</span>
+<span>                   data <span class="op">=</span> <span class="va">epilepsy</span>, </span>
+<span>                   family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                   iter_per_chkpt <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>                   path <span class="op">=</span> <span class="st">'checkpoints/epilepsy'</span><span class="op">)</span></span></code></pre></div>
 <p>When running the above, a custom progress bar is printed that
 includes information about the checkpoints.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#&gt; Compiling Stan program...</span></span>
-<span><span class="co">#&gt; Initial Warmup (Typical Set)</span></span>
-<span><span class="co">#&gt; Chkpt: 1 / 8; Iteration: 250 / 2000 (warmup)</span></span>
-<span><span class="co">#&gt; Chkpt: 2 / 8; Iteration: 500 / 2000 (warmup)</span></span>
-<span><span class="co">#&gt; Chkpt: 3 / 8; Iteration: 750 / 2000 (warmup)</span></span>
-<span><span class="co">#&gt; Chkpt: 4 / 8; Iteration: 1000 / 2000 (warmup)</span></span>
-<span><span class="co">#&gt; Chkpt: 5 / 8; Iteration: 1250 / 2000 (sample)</span></span>
-<span><span class="co">#&gt; Chkpt: 6 / 8; Iteration: 1500 / 2000 (sample)</span></span>
-<span><span class="co">#&gt; Chkpt: 7 / 8; Iteration: 1750 / 2000 (sample)</span></span>
-<span><span class="co">#&gt; Chkpt: 8 / 8; Iteration: 2000 / 2000 (sample)</span></span>
-<span><span class="co">#&gt; Checkpointing complete</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#&gt; Initial Warmup (Typical Set)</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; Chkpt: 1 / 10; Iteration: 200 / 2000 (warmup)</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; Chkpt: 2 / 10; Iteration: 400 / 2000 (warmup)</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; Chkpt: 3 / 10; Iteration: 600 / 2000 (warmup)</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; Chkpt: 4 / 10; Iteration: 800 / 2000 (warmup)</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; Chkpt: 5 / 10; Iteration: 1000 / 2000 (warmup)</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; Chkpt: 6 / 10; Iteration: 1200 / 2000 (sample)</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; Chkpt: 7 / 10; Iteration: 1400 / 2000 (sample)</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; Chkpt: 8 / 10; Iteration: 1600 / 2000 (sample)</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; Chkpt: 9 / 10; Iteration: 1800 / 2000 (sample)</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; Chkpt: 10 / 10; Iteration: 2000 / 2000 (sample)</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>Checkpointing complete</span></code></pre></div>
 <p>In this case, checkpointing is complete.</p>
 </div>
 <div class="section level3">
 <h3 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
 </h3>
-<p><code>fit_m1</code> is a <code>brmsfit</code> object which means that
+<p><code>fit1</code> is a <code>brmsfit</code> object which means that
 all of the functionality of <strong>brms</strong> can still be used.</p>
 <p>Here is the summary output:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit_m1</span></span>
-<span></span>
-<span><span class="co">#&gt;  Family: poisson </span></span>
-<span><span class="co">#&gt;   Links: mu = log </span></span>
-<span><span class="co">#&gt; Formula: count ~ zAge + zBase + (1 | patient) </span></span>
-<span><span class="co">#&gt;    Data: data (Number of observations: 236) </span></span>
-<span><span class="co">#&gt;   Draws: 2 chains, each with iter = 1000; warmup = 0; thin = 1;</span></span>
-<span><span class="co">#&gt;          total post-warmup draws = 2000</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Group-Level Effects: </span></span>
-<span><span class="co">#&gt; ~patient (Number of levels: 59) </span></span>
-<span><span class="co">#&gt;               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; sd(Intercept)     0.58      0.07     0.46     0.73 1.00      349      682</span></span>
-<span></span>
-<span><span class="co">#&gt; Population-Level Effects: </span></span>
-<span><span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept     1.63      0.08     1.46     1.78 1.01      406      898</span></span>
-<span><span class="co">#&gt; zAge          0.11      0.09    -0.06     0.27 1.00      463      796</span></span>
-<span><span class="co">#&gt; zBase         0.73      0.08     0.58     0.89 1.00      613      814</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
-<span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
-<span><span class="co">#&gt; scale reduction factor on split chains (at convergence, Rhat = 1).</span></span></code></pre></div>
+<pre><code> Family: poisson 
+  Links: mu = log 
+Formula: count ~ zAge + zBase * Trt + (1 | patient) 
+   Data: data (Number of observations: 236) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Multilevel Hyperparameters:
+~patient (Number of levels: 59) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     0.58      0.07     0.45     0.73 1.00      956     1696
+
+Regression Coefficients:
+           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept      1.77      0.12     1.53     2.00 1.00      887     1575
+zAge           0.10      0.09    -0.07     0.26 1.00      871     1256
+zBase          0.70      0.12     0.47     0.94 1.00      986     1675
+Trt1          -0.26      0.16    -0.60     0.05 1.01      987     1170
+zBase:Trt1     0.05      0.16    -0.26     0.37 1.00     1075     1824
+
+Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 <div class="section level3">
 <h3 id="posterior-predictive-check">Posterior Predictive Check<a class="anchor" aria-label="anchor" href="#posterior-predictive-check"></a>
 </h3>
 <p>Of course, due to being a <code>brmsfit</code> object, it is seamless
 perform a posterior predictive check.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://mc-stan.org/bayesplot/reference/pp_check.html" class="external-link">pp_check</a></span><span class="op">(</span><span class="va">fit_m1</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://mc-stan.org/bayesplot/reference/pp_check.html" class="external-link">pp_check</a></span><span class="op">(</span><span class="va">fit1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="../reference/figures/pp_check_f1.png"></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="example-2-start-stop-start-etc-">Example 2: Start, Stop, Start, etc.<a class="anchor" aria-label="anchor" href="#example-2-start-stop-start-etc-"></a>
+<h2 id="example-2-stoping-restarting-and-resetting">Example 2: Stoping, restarting, and resetting<a class="anchor" aria-label="anchor" href="#example-2-stoping-restarting-and-resetting"></a>
 </h2>
-<p>The previous example could just as well be fitted directly with
-<strong>brms</strong>. This is because the MCMC sampler was not stopped
-during model fitting.</p>
-<p>In the following example, we illustrate the usefulness of
-<strong>chkptstanr</strong>, i.e., the ability to stop the MCMC sampler
-at will, and then pick right back up where the MCMC sampler left
-off.</p>
-<div class="section level3">
-<h3 id="storage-1">Storage<a class="anchor" aria-label="anchor" href="#storage-1"></a>
-</h3>
-<p>The initial overhead is to create a folder that will store the
-checkpoints, i.e.,</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_folder.html">create_folder</a></span><span class="op">(</span>folder_name  <span class="op">=</span> <span class="st">"chkpt_folder_m2"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="model-fitting-1">Model Fitting<a class="anchor" aria-label="anchor" href="#model-fitting-1"></a>
-</h3>
-<p>This model is mostly the same as above. The one difference is that it
-does not include varying (“random”) intercepts.</p>
-<div class="section level4">
-<h4 id="start-and-stop-two-checkpoints">Start and Stop: Two Checkpoints<a class="anchor" aria-label="anchor" href="#start-and-stop-two-checkpoints"></a>
-</h4>
-<p>To illustrate checkpointing, the following was stopped after 2
-checkpoints.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit_m2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">count</span> <span class="op">~</span> <span class="va">zAge</span> <span class="op">+</span> <span class="va">zBase</span>,</span>
-<span>            family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  data <span class="op">=</span> <span class="va">epilepsy</span>,</span>
-<span>  path  <span class="op">=</span> <span class="va">path</span>,</span>
-<span>  iter_warmup <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  iter_sampling <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  iter_per_chkpt <span class="op">=</span> <span class="fl">250</span>,</span>
-<span><span class="op">)</span></span>
+<p>We can interupt the sampling manually:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span><span class="va">count</span> <span class="op">~</span> <span class="va">zAge</span> <span class="op">+</span> <span class="va">zBase</span> <span class="op">*</span> <span class="va">Trt</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">patient</span><span class="op">)</span>,</span>
+<span>                   data <span class="op">=</span> <span class="va">epilepsy</span>, </span>
+<span>                   family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                   iter_per_chkpt <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>                   path <span class="op">=</span> <span class="st">'checkpoints/epilepsy'</span><span class="op">)</span></span>
+<span></span>
 <span></span>
 <span><span class="co">#&gt; Compiling Stan program...</span></span>
 <span><span class="co">#&gt; Initial Warmup (Typical Set)</span></span>
-<span><span class="co">#&gt; Chkpt: 1 / 8; Iteration: 250 / 2000 (warmup)</span></span>
-<span><span class="co">#&gt; Chkpt: 2 / 8; Iteration: 500 / 2000 (warmup)</span></span></code></pre></div>
-<p>Note this was stopped by clicking on the red button aptly titled stop
-(in the console).</p>
-<p>This is but one use case, for example, needing to do something else
-but not wanting to loose the progress (including the compiled model).
-Another use case is scheduling, such that the model samples during
-certain times until completion.</p>
-</div>
-<div class="section level4">
-<h4 id="start-and-stop-two-more-checkpoints">Start and Stop: Two More Checkpoints<a class="anchor" aria-label="anchor" href="#start-and-stop-two-more-checkpoints"></a>
-</h4>
-<p>Now pick up at the next checkpoint. This is accomplished by simply
-running the same code.</p>
+<span><span class="co">#&gt; Chkpt: 1 / 10; Iteration: 200 / 2000 (warmup)</span></span>
+<span><span class="co">#&gt; Chkpt: 2 / 10; Iteration: 400 / 2000 (warmup)</span></span>
+<span><span class="co">#&gt; Chkpt: 3 / 10; Iteration: 600 / 2000 (warmup)</span></span>
+<span><span class="co">#&gt; Chkpt: 4 / 10; Iteration: 800 / 2000 (warmup)</span></span>
+<span><span class="co">#&gt; Chkpt: 5 / 10; Iteration: 1000 / 2000 (warmup)</span></span>
+<span><span class="co">#&gt; Chkpt: 6 / 10; Iteration: 1200 / 2000 (sample)</span></span>
+<span><span class="co">#&gt; Sampling aborted. You can examine the results or continue sampling by rerunning the same code.</span></span></code></pre></div>
+<p>If the sampler is passed the warmup stage, it returns a
+<code>brmsfit</code> object, so you can examine the results:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit1</span><span class="op">)</span></span></code></pre></div>
+<pre><code> Family: poisson 
+  Links: mu = log 
+Formula: count ~ zAge + zBase * Trt + (1 | patient) 
+   Data: data (Number of observations: 236) 
+  Draws: 4 chains, each with iter = 1200; warmup = 1000; thin = 1;
+         total post-warmup draws = 800
+
+Multilevel Hyperparameters:
+~patient (Number of levels: 59) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     0.57      0.07     0.45     0.72 1.02      209      236
+
+Regression Coefficients:
+           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept      1.75      0.11     1.52     1.98 1.02      206      371
+zAge           0.10      0.08    -0.07     0.25 1.02      240      443
+zBase          0.70      0.11     0.47     0.95 1.00      220      370
+Trt1          -0.24      0.16    -0.56     0.07 1.02      199      239
+zBase:Trt1     0.05      0.15    -0.26     0.35 1.00      243      350
+
+Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<p>We see that the model has not converged, and we can continue sampling
+by rerunning the same code.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span><span class="va">count</span> <span class="op">~</span> <span class="va">zAge</span> <span class="op">+</span> <span class="va">zBase</span> <span class="op">*</span> <span class="va">Trt</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">patient</span><span class="op">)</span>,</span>
+<span>                   data <span class="op">=</span> <span class="va">epilepsy</span>, </span>
+<span>                   family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                   iter_per_chkpt <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>                   path <span class="op">=</span> <span class="st">'checkpoints/epilepsy'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#&gt; Model executable is up to date!</span></span>
+<span><span class="co">#&gt; Chkpt: 7 / 10; Iteration: 1400 / 2000 (sample)</span></span>
+<span><span class="co">#&gt; Chkpt: 8 / 10; Iteration: 1600 / 2000 (sample)</span></span>
+<span><span class="co">#&gt; Chkpt: 9 / 10; Iteration: 1800 / 2000 (sample)</span></span>
+<span><span class="co">#&gt; Chkpt: 10 / 10; Iteration: 2000 / 2000 (sample)</span></span>
+<span><span class="co">#&gt; Checkpointing complete</span></span></code></pre></div>
+<p>And examine the final results:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit_m2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span></span>
-<span>  formula <span class="op">=</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">count</span> <span class="op">~</span> <span class="va">zAge</span> <span class="op">+</span> <span class="va">zBase</span>,</span>
-<span>               family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  data <span class="op">=</span> <span class="va">epilepsy</span>,</span>
-<span>  path  <span class="op">=</span> <span class="va">path</span>,</span>
-<span>  iter_warmup <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  iter_sampling <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  iter_per_chkpt <span class="op">=</span> <span class="fl">250</span>,</span>
-<span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit1</span><span class="op">)</span></span></code></pre></div>
+<pre><code>Family: poisson 
+  Links: mu = log 
+Formula: count ~ zAge + zBase * Trt + (1 | patient) 
+   Data: data (Number of observations: 236) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Multilevel Hyperparameters:
+~patient (Number of levels: 59) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     0.58      0.07     0.45     0.73 1.00      956     1696
+
+Regression Coefficients:
+           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept      1.77      0.12     1.53     2.00 1.00      887     1575
+zAge           0.10      0.09    -0.07     0.26 1.00      871     1256
+zBase          0.70      0.12     0.47     0.94 1.00      986     1675
+Trt1          -0.26      0.16    -0.60     0.05 1.01      987     1170
+zBase:Trt1     0.05      0.16    -0.26     0.37 1.00     1075     1824</code></pre>
+<div class="section level4">
+<h4 id="predetermine-stopping-point">Predetermine stopping point<a class="anchor" aria-label="anchor" href="#predetermine-stopping-point"></a>
+</h4>
+<p>In addition to manually aborting the run, we can predetermine the
+stopping point by specifying the number of iterations after which to
+stop the sampler via the <code>stop_after</code> argument.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span><span class="va">count</span> <span class="op">~</span> <span class="va">zAge</span> <span class="op">+</span> <span class="va">zBase</span> <span class="op">*</span> <span class="va">Trt</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">patient</span><span class="op">)</span>,</span>
+<span>                   data <span class="op">=</span> <span class="va">epilepsy</span>, </span>
+<span>                   family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                   iter_per_chkpt <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>                   stop_after <span class="op">=</span> <span class="fl">1400</span>,</span>
+<span>                   path <span class="op">=</span> <span class="st">'checkpoints/epilepsy'</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#&gt; Sampling next checkpoint</span></span>
-<span><span class="co">#&gt; Chkpt: 3 / 8; Iteration: 750 / 2000 (warmup)</span></span>
-<span><span class="co">#&gt; Chkpt: 4 / 8; Iteration: 1000 / 2000 (warmup)</span></span></code></pre></div>
-<p>Notice it picks up at right where it left off (stopped after 2
-checkpoints)</p>
+<span></span>
+<span><span class="co">#&gt; Compiling Stan program...</span></span>
+<span><span class="co">#&gt; Initial Warmup (Typical Set)</span></span>
+<span><span class="co">#&gt; Chkpt: 1 / 10; Iteration: 200 / 2000 (warmup)</span></span>
+<span><span class="co">#&gt; Chkpt: 2 / 10; Iteration: 400 / 2000 (warmup)</span></span>
+<span><span class="co">#&gt; Chkpt: 3 / 10; Iteration: 600 / 2000 (warmup)</span></span>
+<span><span class="co">#&gt; Chkpt: 4 / 10; Iteration: 800 / 2000 (warmup)</span></span>
+<span><span class="co">#&gt; Chkpt: 5 / 10; Iteration: 1000 / 2000 (warmup)</span></span>
+<span><span class="co">#&gt; Chkpt: 6 / 10; Iteration: 1200 / 2000 (sample)</span></span>
+<span><span class="co">#&gt; Chkpt: 7 / 10; Iteration: 1400 / 2000 (sample)</span></span>
+<span><span class="co">#&gt; Sampling aborted. You can examine the results or continue sampling by rerunning the same code.</span></span></code></pre></div>
 </div>
 <div class="section level4">
-<h4 id="start-finish-checkpointing">Start: Finish Checkpointing<a class="anchor" aria-label="anchor" href="#start-finish-checkpointing"></a>
+<h4 id="reset-sampling">Reset sampling<a class="anchor" aria-label="anchor" href="#reset-sampling"></a>
 </h4>
-<p>Now let us finish the remaining 4 checkpoints.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit_m2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span></span>
-<span>  formula <span class="op">=</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">count</span> <span class="op">~</span> <span class="va">zAge</span> <span class="op">+</span> <span class="va">zBase</span>,</span>
-<span>               family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  data <span class="op">=</span> <span class="va">epilepsy</span>,</span>
-<span>  path  <span class="op">=</span> <span class="va">path</span>,</span>
-<span>  iter_warmup <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  iter_sampling <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  iter_per_chkpt <span class="op">=</span> <span class="fl">250</span>,</span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#&gt; Sampling next checkpoint</span></span>
-<span><span class="co">#&gt; Chkpt: 5 / 8; Iteration: 1250 / 2000 (sample)</span></span>
-<span><span class="co">#&gt; Chkpt: 6 / 8; Iteration: 1500 / 2000 (sample)</span></span>
-<span><span class="co">#&gt; Chkpt: 7 / 8; Iteration: 1750 / 2000 (sample)</span></span>
-<span><span class="co">#&gt; Chkpt: 8 / 8; Iteration: 2000 / 2000 (sample)</span></span>
-<span><span class="co">#&gt; Checkpointing complete</span></span></code></pre></div>
-<p>If we trying running the model again, we get the following
-message:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit_m2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span></span>
-<span>  formula <span class="op">=</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">count</span> <span class="op">~</span> <span class="va">zAge</span> <span class="op">+</span> <span class="va">zBase</span>,</span>
-<span>               family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  data <span class="op">=</span> <span class="va">epilepsy</span>,</span>
-<span>  path  <span class="op">=</span> <span class="va">path</span>,</span>
-<span>  iter_warmup <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  iter_sampling <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  iter_per_chkpt <span class="op">=</span> <span class="fl">250</span>,</span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#&gt; Sampling next checkpoint</span></span>
-<span><span class="co">#&gt; Checkpointing complete</span></span></code></pre></div>
-<p>Note that the arguments need to be exactly the same when
-restarting.</p>
-<p>There is a check for <code>data</code>, <code>formula</code>,
-<code>iter_per_chkpt</code>, etc., and if they have been changed, this
-will produce an error (with an informative warning message).</p>
-</div>
-</div>
-<div class="section level3">
-<h3 id="diagnostics">Diagnostics<a class="anchor" aria-label="anchor" href="#diagnostics"></a>
-</h3>
-<p>Some diagnostic information is provided in the summary output.</p>
+<p>If we want to reset the sampling, we can use the <code>reset</code>
+argument, as long as we have not changed any of the key arguments. For
+example, we can reset the sampling and start from scratch, but we cannot
+change the formula, data, or family (but we can change “stop_after”)</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit_m2</span></span>
-<span></span>
-<span><span class="co">#&gt; Family: poisson </span></span>
-<span><span class="co">#&gt;   Links: mu = log </span></span>
-<span><span class="co">#&gt; Formula: count ~ zAge + zBase </span></span>
-<span><span class="co">#&gt;    Data: data (Number of observations: 236) </span></span>
-<span><span class="co">#&gt;   Draws: 2 chains, each with iter = 1000; warmup = 0; thin = 1;</span></span>
-<span><span class="co">#&gt;          total post-warmup draws = 2000</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Population-Level Effects: </span></span>
-<span><span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept     1.84      0.03     1.78     1.89 1.00     1037     1009</span></span>
-<span><span class="co">#&gt; zAge          0.16      0.02     0.11     0.21 1.00     1192      945</span></span>
-<span><span class="co">#&gt; zBase         0.60      0.01     0.58     0.63 1.00     1463     1559</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Draws were sampled using sample(hmc). For each parameter, Bulk_ESS</span></span>
-<span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
-<span><span class="co">#&gt; scale reduction factor on split chains (at convergence, Rhat = 1).</span></span></code></pre></div>
-<p>These diagnostics indicate the inference converged.</p>
-</div>
-<div class="section level3">
-<h3 id="more-diagnostics">More Diagnostics<a class="anchor" aria-label="anchor" href="#more-diagnostics"></a>
-</h3>
-<p><strong>cmdstanr</strong> works with several packages in the
-<strong>Stan</strong> ecosystem, including <a href="https://mc-stan.org/posterior/" class="external-link"><strong>posterior</strong></a> and
-<a href="https://mc-stan.org/bayesplot/" class="external-link"><strong>bayesplot</strong></a>.</p>
+<code class="sourceCode R"><span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span><span class="va">count</span> <span class="op">~</span> <span class="va">zAge</span> <span class="op">+</span> <span class="va">zBase</span> <span class="op">*</span> <span class="va">Trt</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">patient</span><span class="op">)</span>,</span>
+<span>                   data <span class="op">=</span> <span class="va">epilepsy</span>, </span>
+<span>                   family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                   iter_per_chkpt <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>                   path <span class="op">=</span> <span class="st">'checkpoints/epilepsy'</span>,</span>
+<span>                   stop_after <span class="op">=</span> <span class="fl">1600</span>,</span>
+<span>                   reset <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>If we try to change the formula, data, or family, we will get an
+error:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># draws for bayesplot</span></span>
-<span><span class="va">draws</span> <span class="op">&lt;-</span> <span class="fu">posterior</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/posterior/reference/draws_array.html" class="external-link">as_draws_array</a></span><span class="op">(</span><span class="va">fit_m2</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># trace plot</span></span>
-<span><span class="fu">bayesplot</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/bayesplot/reference/MCMC-traces.html" class="external-link">mcmc_trace</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">draws</span>, pars <span class="op">=</span> <span class="st">"b_zAge"</span><span class="op">)</span> <span class="op">+</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1000</span>, <span class="fl">250</span><span class="op">)</span>, </span>
-<span>           alpha <span class="op">=</span> <span class="fl">0.25</span>,</span>
-<span>           size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../reference/figures/trace_f2.png"></p>
-<p>This vertical lines are placed at each checkpoint.</p>
-</div>
-<div class="section level3">
-<h3 id="model-comparison">Model Comparison<a class="anchor" aria-label="anchor" href="#model-comparison"></a>
-</h3>
-<p>These models can then be compared with approximate leave-one-out
-cross-validation (via the <code>R</code> package <a href="http://mc-stan.org/loo/index.html" class="external-link"><strong>loo</strong></a>).</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://mc-stan.org/loo/reference/loo_compare.html" class="external-link">loo_compare</a></span><span class="op">(</span><span class="fu"><a href="https://mc-stan.org/loo/reference/loo.html" class="external-link">loo</a></span><span class="op">(</span><span class="va">fit_m1</span><span class="op">)</span>, <span class="fu"><a href="https://mc-stan.org/loo/reference/loo.html" class="external-link">loo</a></span><span class="op">(</span><span class="va">fit_m2</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#&gt;       elpd_diff se_diff</span></span>
-<span><span class="co">#&gt; fit_m1    0.0       0.0 </span></span>
-<span><span class="co">#&gt; fit_m2 -203.6      65.4 </span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="compare-to-brm">Compare to <code>brm</code><a class="anchor" aria-label="anchor" href="#compare-to-brm"></a>
-</h2>
-<p>For a sanity check, here is <code>fit_m2</code> fitted with
-<strong>brms</strong>. The estimates should be (basically) the same.</p>
+<code class="sourceCode R"><span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span><span class="va">count</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span><span class="op">|</span><span class="va">patient</span><span class="op">)</span>,</span>
+<span>                   data <span class="op">=</span> <span class="va">epilepsy</span>, </span>
+<span>                   family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                   iter_per_chkpt <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>                   path <span class="op">=</span> <span class="st">'checkpoints/epilepsy'</span>,</span>
+<span>                   stop_after <span class="op">=</span> <span class="fl">1600</span>,</span>
+<span>                   reset <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<pre><code>Error: Important arguments have been changed. Please completely reset the checkpointing via reset_checkpoints(path, recompile = TRUE).
+Interupted before or during warmup. No samples available.</code></pre>
+<p>This is because we cannot use the existing compiled model. We need to
+reset the checkpoints and recompile the model:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit_brms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brm.html" class="external-link">brm</a></span><span class="op">(</span></span>
-<span>  formula <span class="op">=</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">count</span> <span class="op">~</span> <span class="va">zAge</span> <span class="op">+</span> <span class="va">zBase</span>,</span>
-<span>               family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  data <span class="op">=</span> <span class="va">epilepsy</span>,</span>
-<span>  chains <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  iter <span class="op">=</span> <span class="fl">2000</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">fit_brms</span></span>
-<span></span>
-<span><span class="co">#&gt;  Family: poisson </span></span>
-<span><span class="co">#&gt;   Links: mu = log </span></span>
-<span><span class="co">#&gt; Formula: count ~ zAge + zBase </span></span>
-<span><span class="co">#&gt;    Data: epilepsy (Number of observations: 236) </span></span>
-<span><span class="co">#&gt;   Draws: 2 chains, each with iter = 2000; warmup = 1000; thin = 1;</span></span>
-<span><span class="co">#&gt;          total post-warmup draws = 2000</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Population-Level Effects: </span></span>
-<span><span class="co">#&gt;           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS</span></span>
-<span><span class="co">#&gt; Intercept     1.84      0.03     1.78     1.89 1.00     1247     1310</span></span>
-<span><span class="co">#&gt; zAge          0.16      0.02     0.11     0.21 1.00     1226     1191</span></span>
-<span><span class="co">#&gt; zBase         0.60      0.01     0.57     0.63 1.00     1107     1229</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS</span></span>
-<span><span class="co">#&gt; and Tail_ESS are effective sample size measures, and Rhat is the potential</span></span>
-<span><span class="co">#&gt; scale reduction factor on split chains (at convergence, Rhat = 1).</span></span></code></pre></div>
-<p>The results for the parameter estimates and diagnostics are very
-similar (as expected).</p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/reset_checkpoints.html">reset_checkpoints</a></span><span class="op">(</span><span class="st">'checkpoints/epilepsy'</span>, recompile <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="example-3-user-defined-priors">Example 3: User Defined Priors<a class="anchor" aria-label="anchor" href="#example-3-user-defined-priors"></a>
-</h2>
-<p><code><a href="../reference/chkpt_brms.html">chkpt_brms()</a></code> includes <code>...</code> which passes any
-number of (valid) arguments to <code><a href="https://paul-buerkner.github.io/brms/reference/brm.html" class="external-link">brm()</a></code>. Accordingly, priors
-can be specified as though <code><a href="https://paul-buerkner.github.io/brms/reference/brm.html" class="external-link">brm()</a></code> was used.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_folder.html">create_folder</a></span><span class="op">(</span>folder_name <span class="op">=</span> <span class="st">"chkpt_folder_m3"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># priors</span></span>
-<span><span class="va">bprior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">constant</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"b"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">constant</span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"b"</span>, coef <span class="op">=</span> <span class="st">"zBase"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/set_prior.html" class="external-link">prior</a></span><span class="op">(</span><span class="fu">constant</span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"sd"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># fit model</span></span>
-<span><span class="va">fit_m3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/chkpt_brms.html">chkpt_brms</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://paul-buerkner.github.io/brms/reference/brmsformula.html" class="external-link">bf</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">count</span> <span class="op">~</span> <span class="va">zAge</span> <span class="op">+</span> <span class="va">zBase</span>  <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">patient</span><span class="op">)</span>,</span>
-<span>     family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  prior <span class="op">=</span> <span class="va">bprior</span>,</span>
-<span>  data <span class="op">=</span> <span class="va">epilepsy</span>,</span>
-<span>  path  <span class="op">=</span> <span class="va">path</span>,</span>
-<span>  iter_warmup <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  iter_sampling <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  iter_per_chkpt <span class="op">=</span> <span class="fl">250</span>,</span>
-<span>  brmsfit <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="https://mc-stan.org/rstantools/reference/prior_summary.html" class="external-link">prior_summary()</a></code> can be used to confirm that the priors
-found their way into the model correctly, i.e.,</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://mc-stan.org/rstantools/reference/prior_summary.html" class="external-link">prior_summary</a></span><span class="op">(</span><span class="va">fit_m3</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#&gt;                   prior     class      coef   group resp dpar nlpar bound       source</span></span>
-<span><span class="co">#&gt;             constant(1)         b                                                 user</span></span>
-<span><span class="co">#&gt;             constant(1)         b      zAge                               (vectorized)</span></span>
-<span><span class="co">#&gt;             constant(2)         b     zBase                                       user</span></span>
-<span><span class="co">#&gt;  student_t(3, 1.4, 2.5) Intercept                                              default</span></span>
-<span><span class="co">#&gt;           constant(0.5)        sd                                                 user</span></span>
-<span><span class="co">#&gt;           constant(0.5)        sd           patient                       (vectorized)</span></span>
-<span><span class="co">#&gt;           constant(0.5)        sd Intercept patient                       (vectorized)</span></span></code></pre></div>
 </div>
   </div>
 

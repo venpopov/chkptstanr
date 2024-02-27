@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chkptstanr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -60,6 +60,7 @@
 <h4 id="major-bug-fixes-0-1-1">Major bug fixes<a class="anchor" aria-label="anchor" href="#major-bug-fixes-0-1-1"></a></h4>
 <ul><li>Fix major bug <code>"stan_code_path" not found</code> when resuming sampling, preventing the core functionality of the package (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/8" class="external-link">original issue </a><a href="https://github.com/venpopov/chkptstanr/issues/8" class="external-link">#8</a>]</li>
 <li>Fix major bug where detecting existing binaries was not working correctly, causing the package to fail to detect changes to arguments and incorrectly continue to sample ()</li>
+<li>Fix major bug that caused incorrect combination of checkpoints, leading to problems with postprocessing methods (<a href="https://github.com/venpopov/chkptstanr/issues/8" class="external-link">#8</a>)</li>
 <li>
 <code><a href="../reference/chkpt_brms.html">chkpt_brms()</a></code> now works with any <code><a href="https://paul-buerkner.github.io/brms/reference/brm.html" class="external-link">brm()</a></code> arguments, including custom families, data2, etc, rather than giving an error (<a href="https://github.com/donaldRwilliams/chkptstanr/issues/15" class="external-link">original issue </a><a href="https://github.com/venpopov/chkptstanr/issues/15" class="external-link">#15</a>)</li>
 </ul></div>
@@ -86,6 +87,7 @@
 <h4 id="other-changes-0-1-1">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-0-1-1"></a></h4>
 <ul><li>Set-up initial automated testing and continuous integration with GitHub Actions to ensure the package is always working as expected</li>
 <li>Change default number of chains from 2 to 4 to be consistent with brms defaults</li>
+<li>renamed argument “iter_typical” to “iter_adaptation” to better reflect what this stage is doing. iter_typical is deprecated</li>
 </ul></div>
 </div>
     <div class="section level2">

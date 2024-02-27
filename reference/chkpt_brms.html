@@ -18,7 +18,7 @@ models using brms with checkpointing."><meta property="og:image" content="https:
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chkptstanr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -61,15 +61,14 @@ models using brms with checkpointing.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">chkpt_brms</span><span class="op">(</span></span>
 <span>  <span class="va">formula</span>,</span>
 <span>  <span class="va">data</span>,</span>
+<span>  iter_adaptation <span class="op">=</span> <span class="fl">150</span>,</span>
 <span>  iter_warmup <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  iter_sampling <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  iter_per_chkpt <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>  iter_typical <span class="op">=</span> <span class="fl">150</span>,</span>
 <span>  parallel_chains <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  threads_per <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  chkpt_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  control <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  brmsfit <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  stop_after <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  reset <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -91,9 +90,18 @@ Further information can be found in  <code><a href="https://paul-buerkner.github
 to that class) containing data of all variables used in the model.</p></dd>
 
 
+<dt>iter_adaptation</dt>
+<dd><p>(positive integer) The number of iterations in the
+initial warmup, which are used for the adaptation of the step size and
+inverse mass matrix. This is equivalent to the traditional warmup stage.
+Checkpointing will begin only after this stage is complete.</p></dd>
+
+
 <dt>iter_warmup</dt>
 <dd><p>(positive integer) The number of warmup iterations to run
-per chain (defaults to 1000).</p></dd>
+per chain after the adaptation stage (defaults to 1000). During this stage
+the step size and inverse mass matrix are fixed to the values found during
+the adaptation stage. There is no further adaptation performed.</p></dd>
 
 
 <dt>iter_sampling</dt>
@@ -106,13 +114,6 @@ to run per chain (defaults to 1000).</p></dd>
 checkpoint. Note that <code>iter_sampling</code> is divided by
 <code>iter_per_chkpt</code> to determine the number of checkpoints. This must
 result in an integer (if not, there will be an error).</p></dd>
-
-
-<dt>iter_typical</dt>
-<dd><p>(positive integer) The number of iterations in the
-initial warmup, which finds the so-called typical set. This is an initial
-phase, and not included in <code>iter_warmup</code>. Note that a large enough
-value is required to ensure convergence (defaults to 150).</p></dd>
 
 
 <dt>parallel_chains</dt>
@@ -139,11 +140,6 @@ actually keep track of checkpointing progress)</p></dd>
 <dd><p>A named list of parameters to control the sampler's behavior.
 It defaults to NULL so all the default values are used. For a comprehensive
 overview see <code><a href="https://mc-stan.org/rstan/reference/stan.html" class="external-link">stan</a></code>.</p></dd>
-
-
-<dt>brmsfit</dt>
-<dd><p>Logical. Should a <code>brmsfit</code> object be returned (defaults
-to <code>TRUE</code>).</p></dd>
 
 
 <dt>seed</dt>
@@ -185,13 +181,14 @@ custom_families, etc.</p></dd>
     <h2>Value</h2>
     
 
-<p>An object of class <code>brmsfit</code> (with <code>brmsfit = TRUE</code>) or
-<code>chkpt_brms</code> (with <code>brmsfit = FALSE</code>).</p>
+<p>An object of class <code>brmsfit</code></p>
+
+
     </div>
     <div id="note">
     <h2>Note</h2>
     <p>A folder specified by <code>path</code> is created with four subfolders:</p>
-<ul><li><p><strong>cmd_fit</strong>: The cmdstanr fittted models (one for each checkpoint).</p></li>
+<ul><li><p><strong>cmd_output</strong>: The cmdstanr output_files (one for each checkpoint and chain).</p></li>
 <li><p><strong>cp_info</strong>: Mass matrix, step size, and initial values for
 next checkpoint (last iteration from previous checkpoint).</p></li>
 <li><p><strong>cp_samples</strong>: Samples from the posterior distribution

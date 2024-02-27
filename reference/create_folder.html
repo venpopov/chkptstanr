@@ -18,7 +18,7 @@ or chkpt_stan() instead and a folder will be created automatically.'"><meta prop
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chkptstanr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -86,7 +86,7 @@ specified or <code>return_relative = FALSE</code>, the full path is returned.</p
     <div id="note">
     <h2>Note</h2>
     <p>This creates a directory with four folders:</p>
-<ul><li><p><strong>cmd_fit</strong>: The cmdstanr fittted models (one for each checkpoint).</p></li>
+<ul><li><p><strong>cmd_output</strong>: The cmdstanr output_files (one for each checkpoint and chain).</p></li>
 <li><p><strong>cp_info</strong>: Mass matrix, step size, and initial values for
 next checkpoint (last iteration from previous checkpoint).</p></li>
 <li><p><strong>cp_samples</strong>: Samples from the posterior distribution
@@ -121,7 +121,7 @@ and draws from the posterior distribution.</p>
 <span class="r-in"><span><span class="co"># repeat - warning, but folders are kept</span></span></span>
 <span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu">create_folder</span><span class="op">(</span>folder_name <span class="op">=</span> <span class="st">'cp_folder'</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>create_folder() is deprected. Provide a path directly in chkpt_brms() or chkpt_stan() instead and a folder will be created automatically.</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'cmd_fit'</span>, <span class="st">'cp_info'</span>, <span class="st">'cp_samples'</span>, <span class="st">'stan_model'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'cmd_output'</span>, <span class="st">'cp_info'</span>, <span class="st">'cp_samples'</span>, <span class="st">'stan_model'</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="st">'cp_folder'</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>

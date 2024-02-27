@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chkptstanr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.5</span>
       </span>
     </div>
 
@@ -59,10 +59,10 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">chkpt_stan</span><span class="op">(</span></span>
 <span>  <span class="va">model_code</span>,</span>
 <span>  <span class="va">data</span>,</span>
+<span>  iter_adaptation <span class="op">=</span> <span class="fl">150</span>,</span>
 <span>  iter_warmup <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  iter_sampling <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  iter_per_chkpt <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>  iter_typical <span class="op">=</span> <span class="fl">150</span>,</span>
 <span>  parallel_chains <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  threads_per <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  chkpt_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -86,6 +86,13 @@
 be found in <code><a href="https://mc-stan.org/cmdstanr/reference/model-method-sample.html" class="external-link">sample</a></code>.</p></dd>
 
 
+<dt>iter_adaptation</dt>
+<dd><p>(positive integer) The number of iterations in the
+initial warmup, which are used for the adaptation of the step size and
+inverse mass matrix. This is equivalent to the traditional warmup stage.
+Checkpointing will begin only after this stage is complete.</p></dd>
+
+
 <dt>iter_warmup</dt>
 <dd><p>(positive integer) The number of warmup iterations to run
 per chain (defaults to 1000).</p></dd>
@@ -101,13 +108,6 @@ to run per chain (defaults to 1000).</p></dd>
 checkpoint. Note that <code>iter_sampling</code> is divided by
 <code>iter_per_chkpt</code> to determine the number of checkpoints. This must
 result in an integer (if not, there will be an error).</p></dd>
-
-
-<dt>iter_typical</dt>
-<dd><p>(positive integer) The number of iterations in the
-initial warmup, which finds the so-called typical set. This is an initial
-phase, and not included in <code>iter_warmup</code>. Note that a large enough
-value is required to ensure converge (defaults to 150).</p></dd>
 
 
 <dt>parallel_chains</dt>

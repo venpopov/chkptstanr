@@ -51,160 +51,210 @@ including (but not limited to) the following:
 
 
 
-# Installation
+## About this fork
 
-You can install the CRAN version of **chkptstanr** like so:
+The original package was developed by [Donald R.
+Williams](https://github.com/donaldRwilliams/chkptstanr). However, the
+package has not been updated in 2 years, despite breaking issues. Donald
+has kindly agreed for me to take over the package maintenance and
+development.
+
+## Installation
+
+The current CRAN version (0.1.1) has several bugs, and until the next
+release, you can install the development version from GitHub:
 
 ``` r
-# install.packages("chkptstanr")
-```
-
-The CRAN version has several bugs, and until the next release, you can install the development version from GitHub:
-
-```r
 remotes::install_github("venpopov/chkptstanr")
 ```
 
+These packages are needed.
 
 ## Packages
 
-The following packages are needed to run the example.
-
-```r
+``` r
 library(chkptstanr)
 library(brms)
 library(lme4)
 ```
 
-## Data
+## How to use chkptstanr
 
-The illustrative data are bundled with `R` package **lme4**.
+The primary use of **chkptstanr** is to sample from the posterior
+distribution, while having the option of starting and stopping the
+sampler at will. Currently you have two options:
 
-```r
-data("VerbAgg")
+- Manually abort the sampling process at any point
+- Predetermine the stopping point by specifying the number of iterations
+  after which to stop the sampler via the `stop_after` argument
 
-# 20 subjects
-dat_sub <- subset(VerbAgg, id %in% 1:20)
+### Example 1: Manual abort
 
-# numeric outcome
-dat_sub$y <- ifelse(dat_sub$r2 == "Y", 1, 0)
-```
+To make this clear, we will run the main example from the `brms`
+(webpage)\[<https://paul-buerkner.github.io/brms/#how-to-use-brms>\].
+The only additional arguments here are `path`, the location of the
+folder in which to store intermediate samples, and `iter_per_chkpt`, the
+number of iterations between each checkpoint. After the model sampled
+for 1200 iterations, we *manually* abort it:
 
-## Rasch Model
-
-To demonstrate how to use **chkptstanr**, we fit a Rasch model with I 
-fixed item effects and random person effects. This can be done
-with familiar **lme4** style syntax, i.e., 
-
-
-```r
-# brmsformula object
-m1 <- bf(y ~ 0 + item + (1|id), family = binomial())
-```
- 
-
-### Storage
-
-
-The additional overhead is to create a folder that will store the checkpoints, i.e., 
-
-
-```r
-path <- create_folder(folder_name = "chkpt_folder_m1")
-```
-
-### Model Fitting
-
-The primary use of **chkptstanr** is to sample from the posterior distribution, while
-having the option of starting and stopping the sampler at will. 
-
-To make this clear, we stopped the following after 2 checkpoints.
-
-```r
-fit_m1 <- chkpt_brms(formula = m1, 
-                     data = dat_sub,
-                     path  = path,
-                     iter_warmup = 1000,
-                     iter_sampling = 1000,
-                     iter_per_chkpt = 250)
+``` r
+fit1 <- chkpt_brms(count ~ zAge + zBase * Trt + (1|patient),
+                   data = epilepsy, 
+                   family = poisson(),
+                   iter_per_chkpt = 200,
+                   path = 'checkpoints/epilepsy')
 
 
 #> Compiling Stan program...
 #> Initial Warmup (Typical Set)
-#> Chkpt: 1 / 8; Iteration: 250 / 2000 (warmup)
-#> Chkpt: 2 / 8; Iteration: 500 / 2000 (warmup)
+#> Chkpt: 1 / 10; Iteration: 200 / 2000 (warmup)
+#> Chkpt: 2 / 10; Iteration: 400 / 2000 (warmup)
+#> Chkpt: 3 / 10; Iteration: 600 / 2000 (warmup)
+#> Chkpt: 4 / 10; Iteration: 800 / 2000 (warmup)
+#> Chkpt: 5 / 10; Iteration: 1000 / 2000 (warmup)
+#> Chkpt: 6 / 10; Iteration: 1200 / 2000 (sample)
+#> Sampling aborted. You can examine the results or continue sampling by rerunning the same code.
 ```
 
-To start at the next checkpoint, rerun the same code.
+If the sampler is passed the warmup stage, it returns a `brmsfit`
+object, so you can examine the results:
 
-```r
-fit_m1 <- chkpt_brms(formula = m1, 
-                     data = dat_sub,
-                     path  = path,
-                     iter_warmup = 1000,
-                     iter_sampling = 1000,
-                     iter_per_chkpt = 250)
+``` r
+summary(fit1)
+```
 
-#> Sampling next checkpoint
-#> Chkpt: 3 / 8; Iteration: 750 / 2000 (warmup)
-#> Chkpt: 4 / 8; Iteration: 1000 / 2000 (warmup)
-#> Chkpt: 5 / 8; Iteration: 1250 / 2000 (sample)
-#> Chkpt: 6 / 8; Iteration: 1500 / 2000 (sample)
-#> Chkpt: 7 / 8; Iteration: 1750 / 2000 (sample)
-#> Chkpt: 8 / 8; Iteration: 2000 / 2000 (sample)
+     Family: poisson 
+      Links: mu = log 
+    Formula: count ~ zAge + zBase * Trt + (1 | patient) 
+       Data: data (Number of observations: 236) 
+      Draws: 4 chains, each with iter = 1200; warmup = 1000; thin = 1;
+             total post-warmup draws = 800
+
+    Multilevel Hyperparameters:
+    ~patient (Number of levels: 59) 
+                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+    sd(Intercept)     0.57      0.07     0.45     0.72 1.02      209      236
+
+    Regression Coefficients:
+               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+    Intercept      1.75      0.11     1.52     1.98 1.02      206      371
+    zAge           0.10      0.08    -0.07     0.25 1.02      240      443
+    zBase          0.70      0.11     0.47     0.95 1.00      220      370
+    Trt1          -0.24      0.16    -0.56     0.07 1.02      199      239
+    zBase:Trt1     0.05      0.15    -0.26     0.35 1.00      243      350
+
+    Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+    and Tail_ESS are effective sample size measures, and Rhat is the potential
+    scale reduction factor on split chains (at convergence, Rhat = 1).
+
+We see that the model has not converged, and we can continue sampling by
+rerunning the same code.
+
+``` r
+fit1 <- chkpt_brms(count ~ zAge + zBase * Trt + (1|patient),
+                   data = epilepsy, 
+                   family = poisson(),
+                   iter_per_chkpt = 200,
+                   path = 'checkpoints/epilepsy')
+
+#> Model executable is up to date!
+#> Chkpt: 7 / 10; Iteration: 1400 / 2000 (sample)
+#> Chkpt: 8 / 10; Iteration: 1600 / 2000 (sample)
+#> Chkpt: 9 / 10; Iteration: 1800 / 2000 (sample)
+#> Chkpt: 10 / 10; Iteration: 2000 / 2000 (sample)
 #> Checkpointing complete
 ```
 
-### Summary
+And examine the final results:
 
-A key advantage of `chkpt_brms` is that it returns a `brmsfit` object, as seen when printing the summary output.
+``` r
+summary(fit1)
+```
+
+    Family: poisson 
+      Links: mu = log 
+    Formula: count ~ zAge + zBase * Trt + (1 | patient) 
+       Data: data (Number of observations: 236) 
+      Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+             total post-warmup draws = 4000
+
+    Multilevel Hyperparameters:
+    ~patient (Number of levels: 59) 
+                  Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+    sd(Intercept)     0.58      0.07     0.45     0.73 1.00      956     1696
+
+    Regression Coefficients:
+               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+    Intercept      1.77      0.12     1.53     2.00 1.00      887     1575
+    zAge           0.10      0.09    -0.07     0.26 1.00      871     1256
+    zBase          0.70      0.12     0.47     0.94 1.00      986     1675
+    Trt1          -0.26      0.16    -0.60     0.05 1.01      987     1170
+    zBase:Trt1     0.05      0.16    -0.26     0.37 1.00     1075     1824
+
+### Predetermine stopping point
+
+In addition to manually aborting the run, we can predetermine the
+stopping point by specifying the number of iterations after which to
+stop the sampler via the `stop_after` argument.
+
+``` r
+fit1 <- chkpt_brms(count ~ zAge + zBase * Trt + (1|patient),
+                   data = epilepsy, 
+                   family = poisson(),
+                   iter_per_chkpt = 200,
+                   stop_after = 1400,
+                   path = 'checkpoints/epilepsy')
 
 
-```r
-fit_m1
+#> Compiling Stan program...
+#> Initial Warmup (Typical Set)
+#> Chkpt: 1 / 10; Iteration: 200 / 2000 (warmup)
+#> Chkpt: 2 / 10; Iteration: 400 / 2000 (warmup)
+#> Chkpt: 3 / 10; Iteration: 600 / 2000 (warmup)
+#> Chkpt: 4 / 10; Iteration: 800 / 2000 (warmup)
+#> Chkpt: 5 / 10; Iteration: 1000 / 2000 (warmup)
+#> Chkpt: 6 / 10; Iteration: 1200 / 2000 (sample)
+#> Chkpt: 7 / 10; Iteration: 1400 / 2000 (sample)
+#> Sampling aborted. You can examine the results or continue sampling by rerunning the same code.
+```
 
-#>  Family: binomial 
-#>   Links: mu = logit 
-#> Formula: y ~ 0 + item + (1 | id) 
-#>    Data: data (Number of observations: 480) 
-#>   Draws: 2 chains, each with iter = 1000; warmup = 0; thin = 1;
-#>          total post-warmup draws = 2000
+### Reset sampling
 
-#> Group-Level Effects: 
-#> ~id (Number of levels: 20) 
-#>               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> sd(Intercept)     1.68      0.36     1.07     2.46 1.00      683      742
+If we want to reset the sampling, we can use the `reset` argument, as
+long as we have not changed any of the key arguments. For example, we
+can reset the sampling and start from scratch, but we cannot change the
+formula, data, or family (but we can change “stop_after”)
 
-#> Population-Level Effects: 
-#>                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-#> itemS1WantCurse     1.53      0.78     0.07     3.09 1.00      883     1034
-#> itemS1WantScold    -0.38      0.64    -1.61     0.86 1.00      743      888
-#> itemS1WantShout     0.49      0.64    -0.69     1.77 1.00      742     1084
-#> itemS2WantCurse     2.02      0.80     0.51     3.61 1.00      837      939
-#> itemS2WantScold    -0.65      0.64    -1.97     0.58 1.00      854     1001
-#> itemS2WantShout     0.51      0.67    -0.80     1.81 1.00      696      931
-#> itemS3WantCurse     1.16      0.72    -0.24     2.61 1.00      764     1169
-#> itemS3WantScold    -1.98      0.76    -3.54    -0.59 1.00      799     1122
-#> itemS3WantShout    -0.08      0.64    -1.33     1.21 1.00      725     1109
-#> itemS4wantCurse    -0.09      0.65    -1.41     1.12 1.00      736     1007
-#> itemS4WantScold    -3.07      0.93    -5.07    -1.44 1.00     1065     1131
-#> itemS4WantShout    -3.07      0.93    -5.01    -1.41 1.00     1095     1250
-#> itemS1DoCurse       2.57      0.95     0.78     4.55 1.00     1125      988
-#> itemS1DoScold       0.51      0.67    -0.80     1.85 1.00      738     1085
-#> itemS1DoShout       0.21      0.64    -0.97     1.47 1.00      753     1241
-#> itemS2DoCurse       1.97      0.80     0.49     3.61 1.00      828     1088
-#> itemS2DoScold      -0.09      0.64    -1.35     1.18 1.00      759      991
-#> itemS2DoShout      -1.24      0.67    -2.58     0.08 1.00      778      903
-#> itemS3DoCurse       0.20      0.66    -1.16     1.50 1.00      657     1091
-#> itemS3DoScold      -2.44      0.82    -4.22    -0.98 1.00      976     1012
-#> itemS3DoShout      -3.07      0.97    -5.13    -1.36 1.00      999     1186
-#> itemS4DoCurse       0.20      0.65    -1.03     1.48 1.00      730     1307
-#> itemS4DoScold      -0.37      0.63    -1.66     0.88 1.00      709     1064
-#> itemS4DoShout      -2.44      0.81    -4.14    -0.97 1.00      799     1077
+``` r
+fit1 <- chkpt_brms(count ~ zAge + zBase * Trt + (1|patient),
+                   data = epilepsy, 
+                   family = poisson(),
+                   iter_per_chkpt = 200,
+                   path = 'checkpoints/epilepsy',
+                   stop_after = 1600,
+                   reset = TRUE)
+```
 
-#> Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
-#> and Tail_ESS are effective sample size measures, and Rhat is the potential
-#> scale reduction factor on split chains (at convergence, Rhat = 1).
+If we try to change the formula, data, or family, we will get an error:
+
+``` r
+fit1 <- chkpt_brms(count ~ 1 + (1|patient),
+                   data = epilepsy, 
+                   family = poisson(),
+                   iter_per_chkpt = 200,
+                   path = 'checkpoints/epilepsy',
+                   stop_after = 1600,
+                   reset = TRUE)
+```
+
+    Error: Important arguments have been changed. Please completely reset the checkpointing via reset_checkpoints(path, recompile = TRUE).
+    Interupted before or during warmup. No samples available.
+
+This is because we cannot use the existing compiled model. We need to
+reset the checkpoints and recompile the model:
+
+``` r
+reset_checkpoints('checkpoints/epilepsy', recompile = TRUE)
 ```
 
 ## References

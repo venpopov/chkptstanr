@@ -7,6 +7,11 @@
 #' @param data A named list of R objects (like for RStan). Further details can
 #'   be found in \code{\link[cmdstanr]{sample}}.
 #'
+#' @param iter_adaptation (positive integer) The number of iterations in the
+#'   initial warmup, which are used for the adaptation of the step size and 
+#'   inverse mass matrix. This is equivalent to the traditional warmup stage.
+#'   Checkpointing will begin only after this stage is complete.
+#'
 #' @param iter_warmup (positive integer) The number of warmup iterations to run
 #'   per chain (defaults to 1000).
 #'
@@ -17,12 +22,6 @@
 #'   checkpoint. Note that \code{iter_sampling} is divided by
 #'   \code{iter_per_chkpt} to determine the number of checkpoints. This must
 #'   result in an integer (if not, there will be an error).
-#'
-#' @param iter_typical (positive integer) The number of iterations in the
-#'   initial warmup, which finds the so-called typical set. This is an initial
-#'   phase, and not included in \code{iter_warmup}. Note that a large enough
-#'   value is required to ensure converge (defaults to 150).
-#'
 #'
 #' @param parallel_chains (positive integer) The \emph{maximum number} of MCMC
 #'   chains to run in parallel. If parallel_chains is not specified then the
@@ -144,10 +143,10 @@
 #' }
 chkpt_stan <- function(model_code,
                        data,
+                       iter_adaptation = 150,
                        iter_warmup = 1000,
                        iter_sampling = 1000,
                        iter_per_chkpt = 100,
-                       iter_typical = 150,
                        parallel_chains = 4,
                        threads_per = 1,
                        chkpt_progress = TRUE,
@@ -232,7 +231,7 @@ chkpt_stan <- function(model_code,
       seed = seed,
       control = control,
       model = stan_m3$sample,
-      iter_typical = iter_typical,
+      iter_adaptation = iter_adaptation,
       cmd_args = cmd_args,
       progress = chkpt_progress
     )

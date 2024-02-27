@@ -14,6 +14,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+_NOTE: This vignette uses outdated versions of stan syntax and the chkptstanr package. It will be updated shortly._
+
 
 The following examples walk through using **chkptstanr** with the 
  [**Stan**](https://mc-stan.org/users/interfaces/rstan) 

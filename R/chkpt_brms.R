@@ -10,8 +10,15 @@
 #' @param data An object of class \code{data.frame} (or one that can be coerced
 #'   to that class) containing data of all variables used in the model.
 #'
+#' @param iter_adaptation (positive integer) The number of iterations in the
+#'   initial warmup, which are used for the adaptation of the step size and 
+#'   inverse mass matrix. This is equivalent to the traditional warmup stage.
+#'   Checkpointing will begin only after this stage is complete.
+#'
 #' @param iter_warmup (positive integer) The number of warmup iterations to run
-#'   per chain (defaults to 1000).
+#'   per chain after the adaptation stage (defaults to 1000). During this stage
+#'   the step size and inverse mass matrix are fixed to the values found during
+#'   the adaptation stage. There is no further adaptation performed.
 #'
 #' @param iter_sampling (positive integer) The number of post-warmup iterations
 #'   to run per chain (defaults to 1000).
@@ -20,12 +27,6 @@
 #'   checkpoint. Note that \code{iter_sampling} is divided by
 #'   \code{iter_per_chkpt} to determine the number of checkpoints. This must
 #'   result in an integer (if not, there will be an error).
-#'
-#' @param iter_typical (positive integer) The number of iterations in the
-#'   initial warmup, which finds the so-called typical set. This is an initial
-#'   phase, and not included in \code{iter_warmup}. Note that a large enough
-#'   value is required to ensure convergence (defaults to 150).
-#'
 #'
 #' @param parallel_chains (positive integer) The \emph{maximum number} of MCMC
 #'   chains to run in parallel. If parallel_chains is not specified then the
@@ -162,11 +163,11 @@
 #' }
 chkpt_brms <- function(formula,
                        data,
+                       iter_adaptation = 150,
                        iter_warmup = 1000,
                        iter_sampling = 1000,
                        iter_per_chkpt = 100,
-                       iter_typical = 150,
-                       parallel_chains = 2,
+                       parallel_chains = 4,
                        threads_per = 1,
                        chkpt_progress = TRUE,
                        control = NULL,
@@ -178,6 +179,11 @@ chkpt_brms <- function(formula,
   # TODO: MASSIVElY SIMPLIFY AND REFACTOR ALL CODE BELOW AFTER THE HOTFIX IS OUT
   stan_phase = ""
   args <- c(as.list(environment()), list(...))
+  if (!is.null(args$iter_typical)) {
+    warning("iter_typical is deprecated. Please use iter_adaptation instead.")
+    iter_adaptation <- args$iter_typical
+  }
+  
 
   withr::defer({
     if (stan_phase %in% c("sample", "complete")) {
@@ -281,7 +287,7 @@ chkpt_brms <- function(formula,
       seed = seed,
       control = control,
       model = stan_m3$sample,
-      iter_typical = iter_typical,
+      iter_adaptation = iter_adaptation,
       cmd_args = cmd_args,
       progress = chkpt_progress
     )

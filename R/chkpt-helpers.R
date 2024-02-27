@@ -61,14 +61,14 @@ rstring <- function(n = 10, char_set = c(letters, LETTERS, 0:9), seed = NULL) {
 chkpt_typical <- function(model,
                           cmd_args,
                           control,
-                          iter_typical,
+                          iter_adaptation,
                           seed,
                           progress) {
   
   cmd_args$iter_sampling <- 0
   cmd_args$seed <- seed
   cmd_args$save_warmup <- TRUE
-  cmd_args$iter_warmup <- iter_typical
+  cmd_args$iter_warmup <- iter_adaptation
   
   if (progress) {
     capture_output <- capture.output({

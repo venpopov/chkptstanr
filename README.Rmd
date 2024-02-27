@@ -91,21 +91,21 @@ summary(fit1)
   Links: mu = log 
 Formula: count ~ zAge + zBase * Trt + (1 | patient) 
    Data: data (Number of observations: 236) 
-  Draws: 4 chains, each with iter = 200; warmup = 0; thin = 1;
+  Draws: 4 chains, each with iter = 1200; warmup = 1000; thin = 1;
          total post-warmup draws = 800
 
 Multilevel Hyperparameters:
 ~patient (Number of levels: 59) 
               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sd(Intercept)     0.57      0.07     0.45     0.71 1.02       92      103
+sd(Intercept)     0.57      0.07     0.45     0.72 1.02      209      236
 
 Regression Coefficients:
            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept      1.75      0.11     1.54     1.97 1.04      112      158
-zAge           0.10      0.08    -0.06     0.23 1.01      142      283
-zBase          0.71      0.11     0.50     0.95 1.00      149      190
-Trt1          -0.23      0.16    -0.56     0.06 1.03      114      129
-zBase:Trt1     0.04      0.15    -0.26     0.35 1.00      140      189
+Intercept      1.75      0.11     1.52     1.98 1.02      206      371
+zAge           0.10      0.08    -0.07     0.25 1.02      240      443
+zBase          0.70      0.11     0.47     0.95 1.00      220      370
+Trt1          -0.24      0.16    -0.56     0.07 1.02      199      239
+zBase:Trt1     0.05      0.15    -0.26     0.35 1.00      243      350
 
 Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -136,29 +136,25 @@ summary(fit1)
 ```
 
 ```
- Family: poisson 
+Family: poisson 
   Links: mu = log 
 Formula: count ~ zAge + zBase * Trt + (1 | patient) 
    Data: data (Number of observations: 236) 
-  Draws: 4 chains, each with iter = 1000; warmup = 0; thin = 1;
-         total post-warmup draws = 8000
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
 
 Multilevel Hyperparameters:
 ~patient (Number of levels: 59) 
               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sd(Intercept)     0.58      0.07     0.46     0.73 1.01      441      680
+sd(Intercept)     0.58      0.07     0.45     0.73 1.00      956     1696
 
 Regression Coefficients:
            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept      1.76      0.12     1.53     1.99 1.00      524      796
-zAge           0.09      0.09    -0.07     0.26 1.00      664      981
-zBase          0.71      0.12     0.47     0.94 1.00      643      895
-Trt1          -0.26      0.17    -0.58     0.06 1.00      428      726
-zBase:Trt1     0.05      0.16    -0.27     0.37 1.00      689     1013
-
-Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
-and Tail_ESS are effective sample size measures, and Rhat is the potential
-scale reduction factor on split chains (at convergence, Rhat = 1).
+Intercept      1.77      0.12     1.53     2.00 1.00      887     1575
+zAge           0.10      0.09    -0.07     0.26 1.00      871     1256
+zBase          0.70      0.12     0.47     0.94 1.00      986     1675
+Trt1          -0.26      0.16    -0.60     0.05 1.01      987     1170
+zBase:Trt1     0.05      0.16    -0.26     0.37 1.00     1075     1824
 ```
 
 ### Predetermine stopping point
@@ -185,3 +181,41 @@ fit1 <- chkpt_brms(count ~ zAge + zBase * Trt + (1|patient),
 #> Chkpt: 7 / 10; Iteration: 1400 / 2000 (sample)
 #> Sampling aborted. You can examine the results or continue sampling by rerunning the same code.
 ```
+
+### Reset sampling
+
+If we want to reset the sampling, we can use the `reset` argument, as long as we have not changed any of the key arguments. For example, we can reset the sampling and start from scratch, but we cannot change the formula, data, or family (but we can change "stop_after")
+
+```r
+fit1 <- chkpt_brms(count ~ zAge + zBase * Trt + (1|patient),
+                   data = epilepsy, 
+                   family = poisson(),
+                   iter_per_chkpt = 200,
+                   path = 'checkpoints/epilepsy',
+                   stop_after = 1600,
+                   reset = TRUE)
+```
+
+If we try to change the formula, data, or family, we will get an error:
+
+```r
+fit1 <- chkpt_brms(count ~ 1 + (1|patient),
+                   data = epilepsy, 
+                   family = poisson(),
+                   iter_per_chkpt = 200,
+                   path = 'checkpoints/epilepsy',
+                   stop_after = 1600,
+                   reset = TRUE)
+```
+
+```
+Error: Important arguments have been changed. Please completely reset the checkpointing via reset_checkpoints(path, recompile = TRUE).
+Interupted before or during warmup. No samples available.
+```
+
+This is because we cannot use the existing compiled model. We need to reset the checkpoints and recompile the model:
+
+```r
+reset_checkpoints('checkpoints/epilepsy', recompile = TRUE)
+```
+

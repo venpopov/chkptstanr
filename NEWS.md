@@ -27,6 +27,7 @@
 ### Other changes
 * Set-up initial automated testing and continuous integration with GitHub Actions to ensure the package is always working as expected
 * Change default number of chains from 2 to 4 to be consistent with brms defaults
+* renamed argument "iter_typical" to "iter_adaptation" to better reflect what this stage is doing. iter_typical is deprecated
 
 # chkptstanr 0.1.1
 

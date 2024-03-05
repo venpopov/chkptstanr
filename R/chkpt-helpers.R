@@ -260,3 +260,88 @@ strip_attributes <- function(x, protect = c("names", "row.names", "class")) {
   attributes(x)[to_remove] <- NULL
   return(x)
 }
+
+#' @param iter_warmup requested number of warmup iterations
+#' @param iter_sampling requested number of sampling iterations
+#' @param init_buffer requested number of init buffer iterations
+#' @param term_buffer requested number of term buffer iterations
+#' @param window requested size of first metric adaptation window
+#' @return data.frame giving the adaptation schedule. Column
+#'   `phase` will be one of "init_buffer", "window", "term_buffer"
+#'   or "sampling". Column `length` gives the length of the phase.
+#'   Column `iter` gives the starting iteration of the phase. When
+#'   the adaptation schedule contains multiple metric adaptation
+#'   windows, each will get its own row in the output.
+get_adaptation_schedule <- function(
+    iter_warmup, 
+    iter_sampling, 
+    init_buffer, 
+    term_buffer, 
+    window) {
+  # Make sure that we can fit the requested buffers
+  assertthat::assert_that(iter_warmup >= init_buffer + term_buffer)
+  
+  # determine how many windows we have space for
+  window_iters <- iter_warmup - (init_buffer + term_buffer)
+  n_window <- floor(log(window_iters/window + 1, 2))
+  
+  # if n_window is zero, add any leftover iterations to the init buffer
+  if(n_window == 0) {
+    init_buffer <- init_buffer + window_iters
+    window_iters <- 0
+  }
+  
+  # initialize output
+  out <- data.frame(phase = character(), length = integer())
+  
+  # add the init buffer if requested
+  if(init_buffer > 0){
+    out <- rbind(out, data.frame(phase = "init_buffer", length = init_buffer))
+  }
+  
+  # add the windowed phase if requested
+  if(window_iters > 0){
+    window_lengths <- window * 2^c(0:(n_window-1))
+    window_lengths[n_window] <- window_lengths[n_window] + (window_iters - sum(window_lengths))
+    out_window <- data.frame(
+      phase = "window",
+      length = window_lengths
+    )
+    out <- rbind(out, out_window)
+  }
+  
+  # add the term buffer if requested
+  if(term_buffer > 0) {
+    out <- 
+      rbind(
+        out, 
+        data.frame(
+          phase = "term_buffer", 
+          length = term_buffer
+          )
+        )
+  }
+  
+  # add the sampling phase if requested
+  if(iter_sampling > 0) {
+    out <- 
+      rbind(
+        out, 
+        data.frame(
+          phase = "sampling", 
+          length = iter_sampling
+        )
+      )
+  }
+  
+  # put in starting iterations
+  n_phase <- nrow(out)
+  if(n_phase == 1){
+    out$iter <- 1
+  } else {
+    out$iter <- 1 + c(0, cumsum(out$length[1:(n_phase - 1)]))
+  }
+  
+  # return
+  out
+}
